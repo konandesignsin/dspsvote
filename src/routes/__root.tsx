@@ -77,14 +77,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "Dawn Shikshalaya Public School" },
+      { name: "description", content: "Lumina Vote is a futuristic web app for school house elections, offering an immersive and elegant voting experience." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "Dawn Shikshalaya Public School" },
+      { property: "og:description", content: "Lumina Vote is a futuristic web app for school house elections, offering an immersive and elegant voting experience." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Dawn Shikshalaya Public School" },
+      { name: "twitter:description", content: "Lumina Vote is a futuristic web app for school house elections, offering an immersive and elegant voting experience." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a064acf9-f749-464e-b38c-a8cecc3c1450/id-preview-1b7203ee--79a740d3-feaf-4b1f-83f2-38f682ce96b9.lovable.app-1781890534259.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a064acf9-f749-464e-b38c-a8cecc3c1450/id-preview-1b7203ee--79a740d3-feaf-4b1f-83f2-38f682ce96b9.lovable.app-1781890534259.png" },
     ],
     links: [
       {
