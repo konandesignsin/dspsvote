@@ -169,18 +169,26 @@ function CandidatesTab({ candidates }: { candidates: Candidate[] }) {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {filtered.map((c) => {
           const houseInfo = c.house ? HOUSES.find((h) => h.id === c.house) : null;
+          const accent = houseInfo?.color || "#a78bfa";
           return (
             <div key={c.id} className="glass rounded-2xl p-5 flex items-center gap-4 hover:-translate-y-1 transition">
               <div
-                className="w-14 h-14 rounded-xl flex items-center justify-center text-xl font-bold flex-shrink-0"
-                style={{ background: `${houseInfo?.color || "#a78bfa"}30`, color: houseInfo?.color || "#a78bfa" }}
+                className="w-14 h-14 rounded-xl overflow-hidden flex items-center justify-center text-xl font-bold flex-shrink-0"
+                style={{ background: `${accent}30`, color: accent }}
               >
-                {c.photo ? <img src={c.photo} alt="" className="w-full h-full object-cover rounded-xl" /> : c.name[0]}
+                {c.photo ? <img src={c.photo} alt="" className="w-full h-full object-cover" /> : c.name[0]}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-white font-semibold truncate">{c.name}</p>
                 <p className="text-xs text-white/50">{ROLE_LABEL[c.role]}{houseInfo ? ` · ${houseInfo.name}` : " · Common"}</p>
               </div>
+              {c.symbol && (
+                <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 bg-white/5 flex items-center justify-center">
+                  {c.symbol.startsWith("data:") || c.symbol.startsWith("http")
+                    ? <img src={c.symbol} alt="" className="w-full h-full object-contain" />
+                    : <span className="text-2xl">{c.symbol}</span>}
+                </div>
+              )}
               <div className="flex gap-1">
                 <button onClick={() => setEditing(c)} className="glass w-9 h-9 rounded-full flex items-center justify-center text-white/70 hover:text-white">
                   <Pencil className="w-3.5 h-3.5" />
