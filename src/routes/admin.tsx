@@ -1,0 +1,349 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
+import { AuroraBg, Particles } from "@/components/AuroraBg";
+import {
+  HOUSES,
+  ROLE_LABEL,
+  store,
+  useStore,
+  type Candidate,
+  type House,
+  type Role,
+} from "@/lib/election";
+import { Pencil, Trash2, Plus, Download, RotateCcw, Home, X } from "lucide-react";
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, PieChart, Pie, Cell, Legend } from "recharts";
+
+export const Route = createFileRoute("/admin")({
+  head: () => ({ meta: [{ title: "Admin — House Elections" }] }),
+  component: AdminPage,
+});
+
+function AdminPage() {
+  const candidates = useStore(() => store.getCandidates());
+  const votes = useStore(() => store.getVotes());
+  const [tab, setTab] = useState<"dashboard" | "candidates" | "results">("dashboard");
+
+  const totals = useMemo(() => {
+    const byHouse: Record<string, number> = {};
+    HOUSES.forEach((h) => (byHouse[h.id] = 0));
+    votes.forEach((v) => { byHouse[v.voterHouse] = (byHouse[v.voterHouse] || 0) + 1; });
+
+    const byCandidate: Record<string, number> = {};
+    votes.forEach((v) => {
+      Object.values(v.selections).forEach((cid) => {
+        if (cid) byCandidate[cid] = (byCandidate[cid] || 0) + 1;
+      });
+    });
+
+    return { byHouse, byCandidate, total: votes.length };
+  }, [votes]);
+
+  return (
+    <div className="relative min-h-screen w-full overflow-hidden">
+      <AuroraBg />
+      <Particles count={20} />
+      <div className="relative z-10 max-w-7xl mx-auto px-6 py-8">
+        <header className="flex items-center justify-between mb-8 animate-fade-up">
+          <div>
+            <p className="text-xs uppercase tracking-widest text-white/40">Election Control</p>
+            <h1 className="text-3xl font-bold text-gradient-luxury">Admin Panel</h1>
+          </div>
+          <Link to="/" className="glass rounded-full px-4 py-2 text-xs text-white/70 hover:text-white flex items-center gap-2 transition hover:scale-105">
+            <Home className="w-3.5 h-3.5" /> Home
+          </Link>
+        </header>
+
+        <nav className="glass rounded-full p-1.5 inline-flex gap-1 mb-8">
+          {(["dashboard", "candidates", "results"] as const).map((t) => (
+            <button
+              key={t}
+              onClick={() => setTab(t)}
+              className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${
+                tab === t ? "bg-white/15 text-white" : "text-white/50 hover:text-white"
+              }`}
+            >
+              {t[0].toUpperCase() + t.slice(1)}
+            </button>
+          ))}
+        </nav>
+
+        {tab === "dashboard" && <Dashboard candidates={candidates} totals={totals} />}
+        {tab === "candidates" && <CandidatesTab candidates={candidates} />}
+        {tab === "results" && <ResultsTab candidates={candidates} totals={totals} />}
+      </div>
+    </div>
+  );
+}
+
+function Dashboard({ candidates, totals }: { candidates: Candidate[]; totals: { byHouse: Record<string, number>; total: number } }) {
+  const data = HOUSES.map((h) => ({ name: h.name, votes: totals.byHouse[h.id] || 0, color: h.color }));
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-5 animate-fade-up">
+      <Stat label="Total Votes" value={totals.total} accent="#a78bfa" />
+      <Stat label="Candidates" value={candidates.length} accent="#fbbf24" />
+      <Stat label="Houses" value={HOUSES.length} accent="#22c55e" />
+
+      <div className="md:col-span-2 glass rounded-3xl p-6">
+        <h3 className="text-white font-semibold mb-4">Votes by House</h3>
+        <div className="h-72">
+          <ResponsiveContainer>
+            <BarChart data={data}>
+              <XAxis dataKey="name" stroke="rgba(255,255,255,0.5)" />
+              <YAxis stroke="rgba(255,255,255,0.5)" />
+              <Tooltip contentStyle={{ background: "rgba(20,20,40,0.9)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 12, color: "white" }} />
+              <Bar dataKey="votes" radius={[12, 12, 0, 0]}>
+                {data.map((d, i) => <Cell key={i} fill={d.color} />)}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      <div className="glass rounded-3xl p-6">
+        <h3 className="text-white font-semibold mb-4">House Share</h3>
+        <div className="h-72">
+          <ResponsiveContainer>
+            <PieChart>
+              <Pie data={data} dataKey="votes" nameKey="name" cx="50%" cy="50%" innerRadius={50} outerRadius={90}>
+                {data.map((d, i) => <Cell key={i} fill={d.color} />)}
+              </Pie>
+              <Legend wrapperStyle={{ color: "white", fontSize: 12 }} />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Stat({ label, value, accent }: { label: string; value: number; accent: string }) {
+  return (
+    <div className="glass rounded-3xl p-6 relative overflow-hidden">
+      <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full blur-3xl opacity-30" style={{ background: accent }} />
+      <p className="text-xs uppercase tracking-widest text-white/40 mb-1">{label}</p>
+      <p className="text-5xl font-bold text-white">{value}</p>
+    </div>
+  );
+}
+
+function CandidatesTab({ candidates }: { candidates: Candidate[] }) {
+  const [search, setSearch] = useState("");
+  const [roleFilter, setRoleFilter] = useState<Role | "all">("all");
+  const [houseFilter, setHouseFilter] = useState<House | "all" | "none">("all");
+  const [editing, setEditing] = useState<Candidate | null>(null);
+  const [adding, setAdding] = useState(false);
+
+  const filtered = candidates.filter((c) => {
+    if (search && !c.name.toLowerCase().includes(search.toLowerCase())) return false;
+    if (roleFilter !== "all" && c.role !== roleFilter) return false;
+    if (houseFilter === "none" && c.house !== null) return false;
+    if (houseFilter !== "all" && houseFilter !== "none" && c.house !== houseFilter) return false;
+    return true;
+  });
+
+  return (
+    <div className="animate-fade-up">
+      <div className="flex flex-wrap gap-3 mb-6">
+        <input
+          placeholder="Search candidates..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="glass-input rounded-full px-5 py-2.5 text-sm flex-1 min-w-[200px]"
+        />
+        <select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value as any)} className="glass-input rounded-full px-4 py-2.5 text-sm">
+          <option value="all">All Roles</option>
+          {Object.entries(ROLE_LABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+        </select>
+        <select value={houseFilter} onChange={(e) => setHouseFilter(e.target.value as any)} className="glass-input rounded-full px-4 py-2.5 text-sm">
+          <option value="all">All Houses</option>
+          <option value="none">Common (SPL/ASPL)</option>
+          {HOUSES.map((h) => <option key={h.id} value={h.id}>{h.name}</option>)}
+        </select>
+        <button onClick={() => setAdding(true)} className="glass rounded-full px-5 py-2.5 text-sm text-white flex items-center gap-2 hover:scale-105 transition" style={{ boxShadow: "0 0 30px rgba(167,139,250,0.4)" }}>
+          <Plus className="w-4 h-4" /> Add Candidate
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {filtered.map((c) => {
+          const houseInfo = c.house ? HOUSES.find((h) => h.id === c.house) : null;
+          return (
+            <div key={c.id} className="glass rounded-2xl p-5 flex items-center gap-4 hover:-translate-y-1 transition">
+              <div
+                className="w-14 h-14 rounded-xl flex items-center justify-center text-xl font-bold flex-shrink-0"
+                style={{ background: `${houseInfo?.color || "#a78bfa"}30`, color: houseInfo?.color || "#a78bfa" }}
+              >
+                {c.photo ? <img src={c.photo} alt="" className="w-full h-full object-cover rounded-xl" /> : c.name[0]}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-white font-semibold truncate">{c.name}</p>
+                <p className="text-xs text-white/50">{ROLE_LABEL[c.role]}{houseInfo ? ` · ${houseInfo.name}` : " · Common"}</p>
+              </div>
+              <div className="flex gap-1">
+                <button onClick={() => setEditing(c)} className="glass w-9 h-9 rounded-full flex items-center justify-center text-white/70 hover:text-white">
+                  <Pencil className="w-3.5 h-3.5" />
+                </button>
+                <button onClick={() => confirm("Delete candidate?") && store.deleteCandidate(c.id)} className="glass w-9 h-9 rounded-full flex items-center justify-center text-red-300 hover:text-red-200">
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          );
+        })}
+        {filtered.length === 0 && (
+          <div className="col-span-full glass rounded-2xl p-10 text-center text-white/40">No candidates match.</div>
+        )}
+      </div>
+
+      {(adding || editing) && (
+        <CandidateForm
+          initial={editing}
+          onClose={() => { setAdding(false); setEditing(null); }}
+        />
+      )}
+    </div>
+  );
+}
+
+function CandidateForm({ initial, onClose }: { initial: Candidate | null; onClose: () => void }) {
+  const [name, setName] = useState(initial?.name || "");
+  const [role, setRole] = useState<Role>(initial?.role || "spl");
+  const [house, setHouse] = useState<House | "">(initial?.house || "");
+  const [photo, setPhoto] = useState(initial?.photo || "");
+  const [symbol, setSymbol] = useState(initial?.symbol || "");
+
+  const requiresHouse = role === "captain" || role === "vice-captain";
+
+  function save() {
+    if (!name.trim()) return;
+    const data = {
+      name: name.trim(),
+      role,
+      house: requiresHouse ? (house as House) || null : null,
+      photo: photo || undefined,
+      symbol: symbol || undefined,
+    };
+    if (requiresHouse && !data.house) return;
+    if (initial) store.updateCandidate(initial.id, data);
+    else store.addCandidate(data);
+    onClose();
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/60 backdrop-blur-md">
+      <div className="glass-strong rounded-3xl p-8 max-w-md w-full relative">
+        <button onClick={onClose} className="absolute top-4 right-4 text-white/50 hover:text-white"><X className="w-5 h-5" /></button>
+        <h3 className="text-2xl font-bold text-white mb-6">{initial ? "Edit" : "Add"} Candidate</h3>
+        <div className="space-y-4">
+          <Field label="Name"><input value={name} onChange={(e) => setName(e.target.value)} className="glass-input rounded-xl px-4 py-2.5 w-full text-sm" /></Field>
+          <Field label="Role">
+            <select value={role} onChange={(e) => setRole(e.target.value as Role)} className="glass-input rounded-xl px-4 py-2.5 w-full text-sm">
+              {Object.entries(ROLE_LABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+            </select>
+          </Field>
+          {requiresHouse && (
+            <Field label="House">
+              <select value={house} onChange={(e) => setHouse(e.target.value as House)} className="glass-input rounded-xl px-4 py-2.5 w-full text-sm">
+                <option value="">Select house...</option>
+                {HOUSES.map((h) => <option key={h.id} value={h.id}>{h.name}</option>)}
+              </select>
+            </Field>
+          )}
+          <Field label="Photo URL (optional)"><input value={photo} onChange={(e) => setPhoto(e.target.value)} className="glass-input rounded-xl px-4 py-2.5 w-full text-sm" placeholder="https://..." /></Field>
+          <Field label="Symbol (emoji or text)"><input value={symbol} onChange={(e) => setSymbol(e.target.value)} className="glass-input rounded-xl px-4 py-2.5 w-full text-sm" placeholder="⚡" /></Field>
+        </div>
+        <div className="flex gap-3 mt-6">
+          <button onClick={save} className="glass-strong flex-1 rounded-xl py-3 text-white font-medium hover:scale-[1.02] transition" style={{ boxShadow: "0 0 30px rgba(167,139,250,0.4)" }}>Save</button>
+          <button onClick={onClose} className="rounded-xl px-5 text-white/60 hover:text-white">Cancel</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <label className="block">
+      <span className="text-xs uppercase tracking-widest text-white/50 mb-1.5 block">{label}</span>
+      {children}
+    </label>
+  );
+}
+
+function ResultsTab({ candidates, totals }: { candidates: Candidate[]; totals: { byCandidate: Record<string, number>; byHouse: Record<string, number>; total: number } }) {
+  function exportCSV() {
+    const rows = [["Name", "Role", "House", "Votes"]];
+    candidates.forEach((c) => {
+      rows.push([c.name, ROLE_LABEL[c.role], c.house ? HOUSES.find((h) => h.id === c.house)!.name : "Common", String(totals.byCandidate[c.id] || 0)]);
+    });
+    const csv = rows.map((r) => r.map((x) => `"${x}"`).join(",")).join("\n");
+    download("election-results.csv", "text/csv", csv);
+  }
+  function exportJSON() {
+    download("election-results.json", "application/json", JSON.stringify({ candidates, votes: store.getVotes(), summary: totals }, null, 2));
+  }
+  function exportPDF() {
+    const html = `<html><head><title>Election Results</title><style>body{font-family:sans-serif;padding:40px}h1{color:#333}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{padding:10px;border:1px solid #ccc;text-align:left}th{background:#f0f0f0}</style></head><body><h1>Election Results</h1><p>Total Votes: ${totals.total}</p><table><tr><th>Name</th><th>Role</th><th>House</th><th>Votes</th></tr>${candidates.map((c) => `<tr><td>${c.name}</td><td>${ROLE_LABEL[c.role]}</td><td>${c.house ? HOUSES.find((h) => h.id === c.house)!.name : "Common"}</td><td>${totals.byCandidate[c.id] || 0}</td></tr>`).join("")}</table><script>window.print()</script></body></html>`;
+    const w = window.open("", "_blank");
+    if (w) { w.document.write(html); w.document.close(); }
+  }
+  function download(filename: string, type: string, content: string) {
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = filename; a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function reset() {
+    if (confirm("Are you sure? This will erase all vote data.")) store.resetVotes();
+  }
+
+  const grouped = (["spl", "aspl", "captain", "vice-captain"] as Role[]).map((role) => ({
+    role,
+    items: candidates
+      .filter((c) => c.role === role)
+      .map((c) => ({ ...c, votes: totals.byCandidate[c.id] || 0 }))
+      .sort((a, b) => b.votes - a.votes),
+  }));
+
+  return (
+    <div className="animate-fade-up space-y-6">
+      <div className="flex flex-wrap gap-3">
+        <button onClick={exportCSV} className="glass rounded-full px-5 py-2.5 text-sm text-white flex items-center gap-2 hover:scale-105 transition"><Download className="w-4 h-4" /> Export CSV</button>
+        <button onClick={exportJSON} className="glass rounded-full px-5 py-2.5 text-sm text-white flex items-center gap-2 hover:scale-105 transition"><Download className="w-4 h-4" /> Export JSON</button>
+        <button onClick={exportPDF} className="glass rounded-full px-5 py-2.5 text-sm text-white flex items-center gap-2 hover:scale-105 transition"><Download className="w-4 h-4" /> Export PDF</button>
+        <button onClick={reset} className="glass rounded-full px-5 py-2.5 text-sm text-red-200 flex items-center gap-2 hover:scale-105 transition ml-auto" style={{ boxShadow: "0 0 30px rgba(248,113,113,0.3)" }}>
+          <RotateCcw className="w-4 h-4" /> Reset Election
+        </button>
+      </div>
+
+      {grouped.map(({ role, items }) => (
+        <div key={role} className="glass rounded-3xl p-6">
+          <h3 className="text-white font-semibold mb-4">{ROLE_LABEL[role]}</h3>
+          <div className="space-y-2">
+            {items.length === 0 && <p className="text-white/40 text-sm">No candidates.</p>}
+            {items.map((c, i) => {
+              const max = Math.max(...items.map((x) => x.votes), 1);
+              const pct = (c.votes / max) * 100;
+              const accent = c.house ? HOUSES.find((h) => h.id === c.house)!.color : role === "spl" ? "#fbbf24" : "#a78bfa";
+              return (
+                <div key={c.id} className="relative glass rounded-xl px-4 py-3 overflow-hidden">
+                  <div className="absolute inset-y-0 left-0 transition-all" style={{ width: `${pct}%`, background: `linear-gradient(to right, ${accent}30, transparent)` }} />
+                  <div className="relative flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <span className="text-white/40 text-xs w-5">{i + 1}</span>
+                      <span className="text-white font-medium">{c.name}</span>
+                      {c.house && <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: `${accent}20`, color: accent }}>{HOUSES.find((h) => h.id === c.house)!.name}</span>}
+                    </div>
+                    <span className="text-white font-bold tabular-nums">{c.votes}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
