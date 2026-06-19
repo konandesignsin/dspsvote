@@ -259,8 +259,26 @@ function CandidateForm({ initial, onClose }: { initial: Candidate | null; onClos
               </select>
             </Field>
           )}
-          <Field label="Photo URL (optional)"><input value={photo} onChange={(e) => setPhoto(e.target.value)} className="glass-input rounded-xl px-4 py-2.5 w-full text-sm" placeholder="https://..." /></Field>
-          <Field label="Symbol (emoji or text)"><input value={symbol} onChange={(e) => setSymbol(e.target.value)} className="glass-input rounded-xl px-4 py-2.5 w-full text-sm" placeholder="⚡" /></Field>
+          <Field label="Upload Candidate Photo">
+            <ImageUpload
+              value={photo}
+              onChange={(v) => setPhoto(v || "")}
+              label="Upload photo"
+              shape="circle"
+              maxSize={512}
+            />
+          </Field>
+          <Field label="Upload Symbol Image (PNG with transparent background)">
+            <ImageUpload
+              value={symbol && (symbol.startsWith("data:") || symbol.startsWith("http")) ? symbol : ""}
+              onChange={(v) => setSymbol(v || "")}
+              label="Upload symbol"
+              shape="square"
+              accept="image/png,image/svg+xml,image/webp"
+              maxSize={400}
+              preserveTransparency
+            />
+          </Field>
         </div>
         <div className="flex gap-3 mt-6">
           <button onClick={save} className="glass-strong flex-1 rounded-xl py-3 text-white font-medium hover:scale-[1.02] transition" style={{ boxShadow: "0 0 30px rgba(167,139,250,0.4)" }}>Save</button>
