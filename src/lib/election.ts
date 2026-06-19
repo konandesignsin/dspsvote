@@ -36,6 +36,7 @@ export const ROLE_LABEL: Record<Role, string> = {
 const CANDIDATES_KEY = "election.candidates";
 const VOTES_KEY = "election.votes";
 const LOCK_KEY = "election.deviceLock"; // local-only house lock
+const HOUSE_SYMBOLS_KEY = "election.houseSymbols";
 
 function read<T>(key: string, fallback: T): T {
   if (typeof window === "undefined") return fallback;
@@ -75,6 +76,14 @@ export const store = {
   resetVotes: () => write(VOTES_KEY, []),
   getLock: (): House | null => read<House | null>(LOCK_KEY, null),
   setLock: (h: House | null) => write(LOCK_KEY, h),
+  getHouseSymbols: (): Partial<Record<House, string>> =>
+    read<Partial<Record<House, string>>>(HOUSE_SYMBOLS_KEY, {}),
+  setHouseSymbol: (h: House, dataUrl: string | null) => {
+    const cur = store.getHouseSymbols();
+    if (dataUrl) cur[h] = dataUrl;
+    else delete cur[h];
+    write(HOUSE_SYMBOLS_KEY, cur);
+  },
 };
 
 export function useStore<T>(selector: () => T): T {
