@@ -11,7 +11,7 @@ import {
   type House,
   type Role,
 } from "@/lib/election";
-import { Check, Unlock, Sparkles, Home } from "lucide-react";
+import { Check, Unlock, Sparkles, Home, Crown, Gem, Shield, Star } from "lucide-react";
 
 export const Route = createFileRoute("/vote/$house")({
   head: () => ({
@@ -20,11 +20,11 @@ export const Route = createFileRoute("/vote/$house")({
   component: VotePage,
 });
 
-const ROLES_ORDER: { role: Role; theme: string; accent: string; glow: string }[] = [
-  { role: "spl", theme: "SPL", accent: "#fbbf24", glow: "rgba(251,191,36,0.5)" },
-  { role: "aspl", theme: "ASPL", accent: "#a78bfa", glow: "rgba(167,139,250,0.5)" },
-  { role: "captain", theme: "Captain", accent: "", glow: "" },
-  { role: "vice-captain", theme: "Vice Captain", accent: "", glow: "" },
+const ROLES_ORDER: { role: Role; theme: string; Icon: any }[] = [
+  { role: "spl", theme: "SPL", Icon: Crown },
+  { role: "aspl", theme: "ASPL", Icon: Gem },
+  { role: "captain", theme: "Captain", Icon: Shield },
+  { role: "vice-captain", theme: "Vice Captain", Icon: Star },
 ];
 
 function VotePage() {
@@ -122,74 +122,133 @@ function VotePage() {
         </header>
 
         {/* Sections */}
-        <div className="space-y-12 pb-32">
-          {ROLES_ORDER.map(({ role, theme }, idx) => {
+        <div className="space-y-16 pb-40">
+          {ROLES_ORDER.map(({ role, theme, Icon }, idx) => {
             const list = candidatesFor(role);
             const accent = role === "spl" ? "#fbbf24" : role === "aspl" ? "#a78bfa" : houseColor;
             const glow = role === "spl" ? "rgba(251,191,36,0.5)" : role === "aspl" ? "rgba(167,139,250,0.5)" : houseGlow;
+            const selectedId = selections[role];
             return (
-              <section key={role} className="animate-fade-up" style={{ animationDelay: `${idx * 0.1}s` }}>
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="h-px flex-1" style={{ background: `linear-gradient(to right, transparent, ${accent}66, transparent)` }} />
-                  <h2 className="text-sm uppercase tracking-[0.3em] font-semibold" style={{ color: accent }}>
-                    {theme} · {ROLE_LABEL[role]}
+              <section
+                key={role}
+                className="relative glass-strong rounded-[2rem] p-6 md:p-10 animate-fade-up overflow-hidden"
+                style={{
+                  animationDelay: `${idx * 0.12}s`,
+                  boxShadow: `0 30px 80px -20px ${glow}, inset 0 1px 0 rgba(255,255,255,0.12)`,
+                  border: `1px solid ${accent}33`,
+                }}
+              >
+                {/* Ambient glow */}
+                <div
+                  className="absolute -top-32 left-1/2 -translate-x-1/2 w-[120%] h-72 rounded-full blur-3xl opacity-30 pointer-events-none"
+                  style={{ background: accent }}
+                />
+                <div
+                  className="absolute inset-0 opacity-20 pointer-events-none"
+                  style={{ background: `radial-gradient(ellipse at top, ${accent}33, transparent 60%)` }}
+                />
+                {/* Floating sparks */}
+                <Particles count={8} color={accent} />
+
+                {/* Grand heading */}
+                <div className="relative text-center mb-10">
+                  <div className="flex items-center justify-center gap-3 mb-3">
+                    <div className="h-px w-12 md:w-24" style={{ background: `linear-gradient(to right, transparent, ${accent})` }} />
+                    <Icon className="w-5 h-5 md:w-6 md:h-6" style={{ color: accent, filter: `drop-shadow(0 0 10px ${glow})` }} />
+                    <div className="h-px w-12 md:w-24" style={{ background: `linear-gradient(to left, transparent, ${accent})` }} />
+                  </div>
+                  <h2
+                    className="text-3xl md:text-5xl font-extrabold tracking-tight animate-pulse-glow-text"
+                    style={{
+                      backgroundImage: `linear-gradient(135deg, #ffffff 0%, ${accent} 60%, #ffffff 100%)`,
+                      WebkitBackgroundClip: "text",
+                      backgroundClip: "text",
+                      color: "transparent",
+                      textShadow: `0 0 40px ${glow}`,
+                    }}
+                  >
+                    {ROLE_LABEL[role].toUpperCase()}
                   </h2>
-                  <div className="h-px flex-1" style={{ background: `linear-gradient(to right, transparent, ${accent}66, transparent)` }} />
+                  <div className="flex items-center justify-center gap-1 mt-3">
+                    <span className="text-xs uppercase tracking-[0.4em]" style={{ color: accent }}>
+                      {theme}
+                    </span>
+                  </div>
+                  <div
+                    className="mx-auto mt-4 h-[2px] w-32 rounded-full"
+                    style={{ background: `linear-gradient(to right, transparent, ${accent}, transparent)` }}
+                  />
                 </div>
 
                 {list.length === 0 ? (
-                  <div className="glass rounded-2xl p-8 text-center text-white/40 text-sm">
+                  <div className="glass rounded-2xl p-8 text-center text-white/40 text-sm relative">
                     No candidates yet for {ROLE_LABEL[role]}{role === "captain" || role === "vice-captain" ? ` in ${houseInfo.name}` : ""}.
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                  <div className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {list.map((c) => {
-                      const selected = selections[role] === c.id;
+                      const selected = selectedId === c.id;
+                      const dim = selectedId && !selected;
                       return (
                         <button
                           key={c.id}
                           onClick={() => select(role, c.id)}
-                          className={`group relative glass rounded-2xl p-5 text-left transition-all duration-300 hover:-translate-y-1 ${
-                            selected ? "scale-[1.03]" : ""
-                          }`}
-                          style={selected ? {
-                            border: `1px solid ${accent}`,
-                            boxShadow: `0 0 50px ${glow}, inset 0 1px 0 rgba(255,255,255,0.2)`,
-                          } : undefined}
+                          className={`group relative glass rounded-3xl p-6 text-center transition-all duration-500 aspect-square flex flex-col items-center justify-center hover:-translate-y-2 hover:scale-[1.03] ${
+                            selected ? "scale-[1.05] animate-pulse-glow" : ""
+                          } ${dim ? "opacity-40 saturate-50" : ""}`}
+                          style={{
+                            ["--glow-color" as any]: glow,
+                            ...(selected
+                              ? {
+                                  border: `2px solid ${accent}`,
+                                  boxShadow: `0 0 60px ${glow}, inset 0 1px 0 rgba(255,255,255,0.25)`,
+                                  background: `linear-gradient(135deg, ${accent}25, rgba(255,255,255,0.04))`,
+                                }
+                              : {}),
+                          }}
                         >
                           {selected && (
                             <div
-                              className="absolute -top-2 -right-2 w-8 h-8 rounded-full flex items-center justify-center animate-pulse-glow z-10"
-                              style={{ background: accent, ["--glow-color" as any]: glow }}
+                              className="absolute -top-2 -right-2 w-9 h-9 rounded-full flex items-center justify-center z-10"
+                              style={{ background: accent, boxShadow: `0 0 24px ${glow}` }}
                             >
-                              <Check className="w-4 h-4 text-black" strokeWidth={3} />
+                              <Check className="w-5 h-5 text-black" strokeWidth={3} />
                             </div>
                           )}
-                          <div className="flex items-center gap-4">
-                            <div
-                              className="w-16 h-16 rounded-xl flex items-center justify-center text-2xl font-bold flex-shrink-0"
-                              style={{
-                                background: `linear-gradient(135deg, ${accent}40, ${accent}10)`,
-                                color: accent,
-                                boxShadow: selected ? `0 0 25px ${glow}` : "none",
-                              }}
-                            >
-                              {c.photo ? (
-                                <img src={c.photo} alt={c.name} className="w-full h-full object-cover rounded-xl" />
-                              ) : (
-                                c.name.slice(0, 1).toUpperCase()
-                              )}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-white font-semibold truncate">{c.name}</p>
-                              <p className="text-xs text-white/50 uppercase tracking-wider">
-                                {ROLE_LABEL[c.role]}{c.house ? ` · ${HOUSES.find((h) => h.id === c.house)!.name}` : ""}
-                              </p>
-                              {c.symbol && (
-                                <div className="mt-1 inline-block text-2xl">{c.symbol}</div>
-                              )}
-                            </div>
+                          {/* Circular profile */}
+                          <div
+                            className="w-24 h-24 rounded-full overflow-hidden flex items-center justify-center text-3xl font-bold mb-3 ring-2 transition-all duration-300 group-hover:scale-105"
+                            style={{
+                              background: `linear-gradient(135deg, ${accent}40, ${accent}10)`,
+                              color: accent,
+                              boxShadow: `0 0 30px ${glow}`,
+                              ["--tw-ring-color" as any]: `${accent}80`,
+                            }}
+                          >
+                            {c.photo ? (
+                              <img src={c.photo} alt={c.name} className="w-full h-full object-cover" />
+                            ) : (
+                              c.name.slice(0, 1).toUpperCase()
+                            )}
                           </div>
+                          {/* Symbol */}
+                          {c.symbol && (
+                            <div
+                              className="w-10 h-10 mb-2 flex items-center justify-center rounded-lg"
+                              style={{ filter: `drop-shadow(0 0 8px ${glow})` }}
+                            >
+                              {c.symbol.startsWith("data:") || c.symbol.startsWith("http") ? (
+                                <img src={c.symbol} alt="" className="w-full h-full object-contain" />
+                              ) : (
+                                <span className="text-2xl">{c.symbol}</span>
+                              )}
+                            </div>
+                          )}
+                          {/* Name */}
+                          <p className="text-white font-semibold text-base truncate w-full px-2">{c.name}</p>
+                          <p className="text-[10px] text-white/40 uppercase tracking-widest mt-1 truncate w-full">
+                            {c.house ? HOUSES.find((h) => h.id === c.house)!.name : "Common"}
+                          </p>
                         </button>
                       );
                     })}

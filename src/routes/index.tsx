@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { HOUSES, store, seedIfEmpty, type House } from "@/lib/election";
+import { HOUSES, store, seedIfEmpty, useStore, type House } from "@/lib/election";
 import { AuroraBg, Particles } from "@/components/AuroraBg";
 import { Settings, Lock, Unlock, Sparkles } from "lucide-react";
 
@@ -21,6 +21,7 @@ function Index() {
   const navigate = useNavigate();
   const [pendingHouse, setPendingHouse] = useState<House | null>(null);
   const [lock, setLock] = useState<House | null>(null);
+  const houseSymbols = useStore(() => store.getHouseSymbols());
 
   useEffect(() => {
     seedIfEmpty();
@@ -99,18 +100,27 @@ function Index() {
 
               <div className="relative">
                 <div
-                  className="w-20 h-20 rounded-2xl flex items-center justify-center mb-6 animate-float-y"
+                  className="w-24 h-24 rounded-2xl flex items-center justify-center mb-6 animate-float-y overflow-hidden"
                   style={{
                     background: `linear-gradient(135deg, ${h.color}40, ${h.color}10)`,
-                    boxShadow: `0 0 40px ${h.glow}, inset 0 1px 0 rgba(255,255,255,0.2)`,
+                    boxShadow: `0 0 50px ${h.glow}, inset 0 1px 0 rgba(255,255,255,0.2)`,
                   }}
                 >
-                  <span className="text-4xl">
-                    {h.id === "minotaur" && "🐂"}
-                    {h.id === "kraken" && "🐙"}
-                    {h.id === "thunderbird" && "🦅"}
-                    {h.id === "dragon" && "🐉"}
-                  </span>
+                  {houseSymbols[h.id] ? (
+                    <img
+                      src={houseSymbols[h.id]}
+                      alt={h.name}
+                      className="w-full h-full object-contain p-2"
+                      style={{ filter: `drop-shadow(0 0 12px ${h.glow})` }}
+                    />
+                  ) : (
+                    <span className="text-4xl">
+                      {h.id === "minotaur" && "🐂"}
+                      {h.id === "kraken" && "🐙"}
+                      {h.id === "thunderbird" && "🦅"}
+                      {h.id === "dragon" && "🐉"}
+                    </span>
+                  )}
                 </div>
                 <p className="text-xs uppercase tracking-widest text-white/40 mb-2">House</p>
                 <h3 className="text-3xl font-bold mb-2" style={{ color: h.color }}>{h.name}</h3>

@@ -12,6 +12,7 @@ import {
 } from "@/lib/election";
 import { Pencil, Trash2, Plus, Download, RotateCcw, Home, X } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, PieChart, Pie, Cell, Legend } from "recharts";
+import { ImageUpload } from "@/components/ImageUpload";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Admin — House Elections" }] }),
@@ -21,7 +22,7 @@ export const Route = createFileRoute("/admin")({
 function AdminPage() {
   const candidates = useStore(() => store.getCandidates());
   const votes = useStore(() => store.getVotes());
-  const [tab, setTab] = useState<"dashboard" | "candidates" | "results">("dashboard");
+  const [activeTab, setActiveTab] = useState<"dashboard" | "candidates" | "houses" | "results">("dashboard");
 
   const totals = useMemo(() => {
     const byHouse: Record<string, number> = {};
@@ -53,23 +54,24 @@ function AdminPage() {
           </Link>
         </header>
 
-        <nav className="glass rounded-full p-1.5 inline-flex gap-1 mb-8">
-          {(["dashboard", "candidates", "results"] as const).map((t) => (
+        <nav className="glass rounded-full p-1.5 inline-flex flex-wrap gap-1 mb-8">
+          {(["dashboard", "candidates", "houses", "results"] as const).map((t) => (
             <button
               key={t}
-              onClick={() => setTab(t)}
+              onClick={() => setActiveTab(t)}
               className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${
-                tab === t ? "bg-white/15 text-white" : "text-white/50 hover:text-white"
+                activeTab === t ? "bg-white/15 text-white" : "text-white/50 hover:text-white"
               }`}
             >
-              {t[0].toUpperCase() + t.slice(1)}
+              {t === "houses" ? "House Management" : t[0].toUpperCase() + t.slice(1)}
             </button>
           ))}
         </nav>
 
-        {tab === "dashboard" && <Dashboard candidates={candidates} totals={totals} />}
-        {tab === "candidates" && <CandidatesTab candidates={candidates} />}
-        {tab === "results" && <ResultsTab candidates={candidates} totals={totals} />}
+        {activeTab === "dashboard" && <Dashboard candidates={candidates} totals={totals} />}
+        {activeTab === "candidates" && <CandidatesTab candidates={candidates} />}
+        {activeTab === "houses" && <HousesTab />}
+        {activeTab === "results" && <ResultsTab candidates={candidates} totals={totals} />}
       </div>
     </div>
   );
@@ -167,18 +169,26 @@ function CandidatesTab({ candidates }: { candidates: Candidate[] }) {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {filtered.map((c) => {
           const houseInfo = c.house ? HOUSES.find((h) => h.id === c.house) : null;
+          const accent = houseInfo?.color || "#a78bfa";
           return (
             <div key={c.id} className="glass rounded-2xl p-5 flex items-center gap-4 hover:-translate-y-1 transition">
               <div
-                className="w-14 h-14 rounded-xl flex items-center justify-center text-xl font-bold flex-shrink-0"
-                style={{ background: `${houseInfo?.color || "#a78bfa"}30`, color: houseInfo?.color || "#a78bfa" }}
+                className="w-14 h-14 rounded-xl overflow-hidden flex items-center justify-center text-xl font-bold flex-shrink-0"
+                style={{ background: `${accent}30`, color: accent }}
               >
-                {c.photo ? <img src={c.photo} alt="" className="w-full h-full object-cover rounded-xl" /> : c.name[0]}
+                {c.photo ? <img src={c.photo} alt="" className="w-full h-full object-cover" /> : c.name[0]}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-white font-semibold truncate">{c.name}</p>
                 <p className="text-xs text-white/50">{ROLE_LABEL[c.role]}{houseInfo ? ` · ${houseInfo.name}` : " · Common"}</p>
               </div>
+              {c.symbol && (
+                <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 bg-white/5 flex items-center justify-center">
+                  {c.symbol.startsWith("data:") || c.symbol.startsWith("http")
+                    ? <img src={c.symbol} alt="" className="w-full h-full object-contain" />
+                    : <span className="text-2xl">{c.symbol}</span>}
+                </div>
+              )}
               <div className="flex gap-1">
                 <button onClick={() => setEditing(c)} className="glass w-9 h-9 rounded-full flex items-center justify-center text-white/70 hover:text-white">
                   <Pencil className="w-3.5 h-3.5" />
@@ -249,8 +259,26 @@ function CandidateForm({ initial, onClose }: { initial: Candidate | null; onClos
               </select>
             </Field>
           )}
-          <Field label="Photo URL (optional)"><input value={photo} onChange={(e) => setPhoto(e.target.value)} className="glass-input rounded-xl px-4 py-2.5 w-full text-sm" placeholder="https://..." /></Field>
-          <Field label="Symbol (emoji or text)"><input value={symbol} onChange={(e) => setSymbol(e.target.value)} className="glass-input rounded-xl px-4 py-2.5 w-full text-sm" placeholder="⚡" /></Field>
+          <Field label="Upload Candidate Photo">
+            <ImageUpload
+              value={photo}
+              onChange={(v) => setPhoto(v || "")}
+              label="Upload photo"
+              shape="circle"
+              maxSize={512}
+            />
+          </Field>
+          <Field label="Upload Symbol Image (PNG with transparent background)">
+            <ImageUpload
+              value={symbol && (symbol.startsWith("data:") || symbol.startsWith("http")) ? symbol : ""}
+              onChange={(v) => setSymbol(v || "")}
+              label="Upload symbol"
+              shape="square"
+              accept="image/png,image/svg+xml,image/webp"
+              maxSize={400}
+              preserveTransparency
+            />
+          </Field>
         </div>
         <div className="flex gap-3 mt-6">
           <button onClick={save} className="glass-strong flex-1 rounded-xl py-3 text-white font-medium hover:scale-[1.02] transition" style={{ boxShadow: "0 0 30px rgba(167,139,250,0.4)" }}>Save</button>
@@ -344,6 +372,62 @@ function ResultsTab({ candidates, totals }: { candidates: Candidate[]; totals: {
           </div>
         </div>
       ))}
+    </div>
+  );
+}
+function HousesTab() {
+  const symbols = useStore(() => store.getHouseSymbols());
+  return (
+    <div className="animate-fade-up">
+      <div className="glass rounded-3xl p-6 mb-6">
+        <h3 className="text-white font-semibold text-lg mb-1">House Symbol Management</h3>
+        <p className="text-white/50 text-sm">Upload a symbol/logo for each house. They appear on the home page house cards with a soft glow.</p>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        {HOUSES.map((h) => {
+          const current = symbols[h.id];
+          return (
+            <div key={h.id} className="glass rounded-3xl p-6 relative overflow-hidden">
+              <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full blur-3xl opacity-30" style={{ background: h.color }} />
+              <div className="relative">
+                <div className="flex items-center gap-3 mb-5">
+                  <div
+                    className="w-14 h-14 rounded-2xl flex items-center justify-center overflow-hidden"
+                    style={{
+                      background: `linear-gradient(135deg, ${h.color}40, ${h.color}10)`,
+                      boxShadow: `0 0 24px ${h.glow}`,
+                    }}
+                  >
+                    {current ? (
+                      <img src={current} alt={h.name} className="w-full h-full object-contain p-1" />
+                    ) : (
+                      <span className="text-2xl">
+                        {h.id === "minotaur" && "🐂"}
+                        {h.id === "kraken" && "🐙"}
+                        {h.id === "thunderbird" && "🦅"}
+                        {h.id === "dragon" && "🐉"}
+                      </span>
+                    )}
+                  </div>
+                  <div>
+                    <p className="text-xs uppercase tracking-widest text-white/40">House</p>
+                    <h4 className="text-xl font-bold" style={{ color: h.color }}>{h.name}</h4>
+                  </div>
+                </div>
+                <ImageUpload
+                  value={current}
+                  onChange={(v) => store.setHouseSymbol(h.id, v)}
+                  label="Upload symbol"
+                  shape="square"
+                  accept="image/png,image/svg+xml,image/webp"
+                  maxSize={400}
+                  preserveTransparency
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
