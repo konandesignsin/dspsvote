@@ -375,3 +375,59 @@ function ResultsTab({ candidates, totals }: { candidates: Candidate[]; totals: {
     </div>
   );
 }
+function HousesTab() {
+  const symbols = useStore(() => store.getHouseSymbols());
+  return (
+    <div className="animate-fade-up">
+      <div className="glass rounded-3xl p-6 mb-6">
+        <h3 className="text-white font-semibold text-lg mb-1">House Symbol Management</h3>
+        <p className="text-white/50 text-sm">Upload a symbol/logo for each house. They appear on the home page house cards with a soft glow.</p>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        {HOUSES.map((h) => {
+          const current = symbols[h.id];
+          return (
+            <div key={h.id} className="glass rounded-3xl p-6 relative overflow-hidden">
+              <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full blur-3xl opacity-30" style={{ background: h.color }} />
+              <div className="relative">
+                <div className="flex items-center gap-3 mb-5">
+                  <div
+                    className="w-14 h-14 rounded-2xl flex items-center justify-center overflow-hidden"
+                    style={{
+                      background: `linear-gradient(135deg, ${h.color}40, ${h.color}10)`,
+                      boxShadow: `0 0 24px ${h.glow}`,
+                    }}
+                  >
+                    {current ? (
+                      <img src={current} alt={h.name} className="w-full h-full object-contain p-1" />
+                    ) : (
+                      <span className="text-2xl">
+                        {h.id === "minotaur" && "🐂"}
+                        {h.id === "kraken" && "🐙"}
+                        {h.id === "thunderbird" && "🦅"}
+                        {h.id === "dragon" && "🐉"}
+                      </span>
+                    )}
+                  </div>
+                  <div>
+                    <p className="text-xs uppercase tracking-widest text-white/40">House</p>
+                    <h4 className="text-xl font-bold" style={{ color: h.color }}>{h.name}</h4>
+                  </div>
+                </div>
+                <ImageUpload
+                  value={current}
+                  onChange={(v) => store.setHouseSymbol(h.id, v)}
+                  label="Upload symbol"
+                  shape="square"
+                  accept="image/png,image/svg+xml,image/webp"
+                  maxSize={400}
+                  preserveTransparency
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
