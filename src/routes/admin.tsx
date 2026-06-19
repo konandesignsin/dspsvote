@@ -12,6 +12,7 @@ import {
 } from "@/lib/election";
 import { Pencil, Trash2, Plus, Download, RotateCcw, Home, X } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, PieChart, Pie, Cell, Legend } from "recharts";
+import { ImageUpload } from "@/components/ImageUpload";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Admin — House Elections" }] }),
@@ -22,6 +23,7 @@ function AdminPage() {
   const candidates = useStore(() => store.getCandidates());
   const votes = useStore(() => store.getVotes());
   const [tab, setTab] = useState<"dashboard" | "candidates" | "results">("dashboard");
+  const [activeTab, setActiveTab] = useState<"dashboard" | "candidates" | "houses" | "results">("dashboard");
 
   const totals = useMemo(() => {
     const byHouse: Record<string, number> = {};
@@ -53,23 +55,24 @@ function AdminPage() {
           </Link>
         </header>
 
-        <nav className="glass rounded-full p-1.5 inline-flex gap-1 mb-8">
-          {(["dashboard", "candidates", "results"] as const).map((t) => (
+        <nav className="glass rounded-full p-1.5 inline-flex flex-wrap gap-1 mb-8">
+          {(["dashboard", "candidates", "houses", "results"] as const).map((t) => (
             <button
               key={t}
-              onClick={() => setTab(t)}
+              onClick={() => setActiveTab(t)}
               className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${
-                tab === t ? "bg-white/15 text-white" : "text-white/50 hover:text-white"
+                activeTab === t ? "bg-white/15 text-white" : "text-white/50 hover:text-white"
               }`}
             >
-              {t[0].toUpperCase() + t.slice(1)}
+              {t === "houses" ? "House Management" : t[0].toUpperCase() + t.slice(1)}
             </button>
           ))}
         </nav>
 
-        {tab === "dashboard" && <Dashboard candidates={candidates} totals={totals} />}
-        {tab === "candidates" && <CandidatesTab candidates={candidates} />}
-        {tab === "results" && <ResultsTab candidates={candidates} totals={totals} />}
+        {activeTab === "dashboard" && <Dashboard candidates={candidates} totals={totals} />}
+        {activeTab === "candidates" && <CandidatesTab candidates={candidates} />}
+        {activeTab === "houses" && <HousesTab />}
+        {activeTab === "results" && <ResultsTab candidates={candidates} totals={totals} />}
       </div>
     </div>
   );
