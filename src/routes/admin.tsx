@@ -22,7 +22,6 @@ export const Route = createFileRoute("/admin")({
 function AdminPage() {
   const candidates = useStore(() => store.getCandidates());
   const votes = useStore(() => store.getVotes());
-  const [tab, setTab] = useState<"dashboard" | "candidates" | "results">("dashboard");
   const [activeTab, setActiveTab] = useState<"dashboard" | "candidates" | "houses" | "results">("dashboard");
 
   const totals = useMemo(() => {
