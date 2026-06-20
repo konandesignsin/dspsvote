@@ -1,6 +1,12 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { AuroraBg, Particles } from "@/components/AuroraBg";
+import { TiltGlass } from "@/components/TiltGlass";
+import { HouseLockBadge } from "@/components/HouseLockBadge";
+import { GlowingBird, GoldDust } from "@/components/GlowingBird";
+import { LightRays, StarField } from "@/components/LightRays";
+import { CountdownRing } from "@/components/CountdownRing";
+import { PremiumButton } from "@/components/PremiumButton";
 import {
   HOUSES,
   ROLE_LABEL,
@@ -11,7 +17,7 @@ import {
   type House,
   type Role,
 } from "@/lib/election";
-import { Check, Unlock, Sparkles, Home, Crown, Gem, Shield, Star } from "lucide-react";
+import { Check, Sparkles, Home, Crown, Gem, Shield, Star } from "lucide-react";
 
 export const Route = createFileRoute("/vote/$house")({
   head: () => ({
@@ -76,24 +82,24 @@ function VotePage() {
     setTimeout(() => {
       setSubmitted(true);
     }, 400);
-    setTimeout(() => {
-      const lock = store.getLock();
-      if (lock) {
-        // refresh to house
-        setSubmitted(false);
-        setSubmitting(false);
-        setSelections({});
-        navigate({ to: "/vote/$house", params: { house: lock } });
-      } else {
-        navigate({ to: "/" });
-      }
-    }, 4000);
+  }
+
+  function handleCountdownDone() {
+    const lock = store.getLock();
+    if (lock) {
+      setSubmitted(false);
+      setSubmitting(false);
+      setSelections({});
+    } else {
+      navigate({ to: "/" });
+    }
   }
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
       <AuroraBg />
       <Particles count={30} />
+      <HouseLockBadge />
 
       {/* House color halo */}
       <div
@@ -113,12 +119,7 @@ function VotePage() {
               {houseInfo.name} House
             </h1>
           </div>
-          <button
-            onClick={() => { store.setLock(null); navigate({ to: "/" }); }}
-            className="glass rounded-full px-4 py-2 text-xs text-white/70 hover:text-white flex items-center gap-2 transition hover:scale-105"
-          >
-            <Unlock className="w-3.5 h-3.5" /> Unlock
-          </button>
+          <div className="w-20" />
         </header>
 
         {/* Sections */}
@@ -190,10 +191,12 @@ function VotePage() {
                       const selected = selectedId === c.id;
                       const dim = selectedId && !selected;
                       return (
-                        <button
+                        <TiltGlass
                           key={c.id}
+                          as="button"
                           onClick={() => select(role, c.id)}
-                          className={`group relative glass rounded-3xl p-6 text-center transition-all duration-500 aspect-square flex flex-col items-center justify-center hover:-translate-y-2 hover:scale-[1.03] ${
+                          intensity={12}
+                          className={`group glass rounded-3xl p-6 text-center aspect-square flex flex-col items-center justify-center ${
                             selected ? "scale-[1.05] animate-pulse-glow" : ""
                           } ${dim ? "opacity-40 saturate-50" : ""}`}
                           style={{
@@ -209,7 +212,7 @@ function VotePage() {
                         >
                           {selected && (
                             <div
-                              className="absolute -top-2 -right-2 w-9 h-9 rounded-full flex items-center justify-center z-10"
+                              className="absolute -top-2 -right-2 w-9 h-9 rounded-full flex items-center justify-center z-10 animate-breathe"
                               style={{ background: accent, boxShadow: `0 0 24px ${glow}` }}
                             >
                               <Check className="w-5 h-5 text-black" strokeWidth={3} />
@@ -249,7 +252,7 @@ function VotePage() {
                           <p className="text-[10px] text-white/40 uppercase tracking-widest mt-1 truncate w-full">
                             {c.house ? HOUSES.find((h) => h.id === c.house)!.name : "Common"}
                           </p>
-                        </button>
+                        </TiltGlass>
                       );
                     })}
                   </div>
@@ -261,7 +264,7 @@ function VotePage() {
 
         {/* Submit bar */}
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-30">
-          <button
+          <PremiumButton
             disabled={!allFilled || submitting}
             onClick={submit}
             className="glass-strong rounded-full px-10 py-4 font-semibold text-white text-base disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 hover:scale-105 flex items-center gap-3"
@@ -272,39 +275,61 @@ function VotePage() {
           >
             <Sparkles className="w-4 h-4" />
             {submitting ? "Submitting..." : allFilled ? "Submit Vote" : "Select all candidates to vote"}
-          </button>
+          </PremiumButton>
         </div>
       </div>
 
       {/* Success overlay */}
-      {submitted && <SuccessOverlay color={houseColor} glow={houseGlow} />}
+      {submitted && <SuccessOverlay color={houseColor} glow={houseGlow} onDone={handleCountdownDone} />}
     </div>
   );
 }
 
-function SuccessOverlay({ color, glow }: { color: string; glow: string }) {
+function SuccessOverlay({ color, glow, onDone }: { color: string; glow: string; onDone: () => void }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xl">
-      <Particles count={60} color={color} />
-      <div className="glass-strong rounded-3xl px-12 py-10 text-center relative overflow-visible animate-fade-up max-w-md">
-        <div
-          className="absolute inset-0 rounded-3xl blur-3xl opacity-40 -z-10"
-          style={{ background: color }}
-        />
-        {/* flying bird */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/2 left-1/2 animate-fly-bird text-2xl" style={{ filter: `drop-shadow(0 0 12px ${color})` }}>
-            🕊️
-          </div>
-        </div>
-        <div
-          className="w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-6 animate-pulse-glow"
-          style={{ background: color, ["--glow-color" as any]: glow }}
+    <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-3xl" style={{ background: "rgba(5,4,21,0.85)" }}>
+      {/* Magical environment */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute inset-0" style={{
+          background: `radial-gradient(ellipse at center, ${color}33 0%, transparent 60%), radial-gradient(ellipse at 20% 30%, rgba(253,224,71,0.25), transparent 50%), radial-gradient(ellipse at 80% 70%, ${color}22, transparent 50%)`
+        }} />
+        <StarField count={120} />
+        <LightRays color={`${color}88`} />
+        <GoldDust count={40} />
+        <Particles count={50} color={color} />
+      </div>
+
+      {/* Center popup */}
+      <div className="relative animate-fade-up" style={{ animation: "fade-up 0.6s ease-out both, breathe 4s ease-in-out infinite 0.6s" }}>
+        <div className="glass-strong rounded-[2.5rem] px-12 py-12 text-center relative overflow-visible max-w-md min-w-[340px]"
+          style={{ boxShadow: `0 30px 100px ${glow}, 0 0 80px ${glow}, inset 0 1px 0 rgba(255,255,255,0.25)` }}
         >
-          <Check className="w-10 h-10 text-black" strokeWidth={3} />
+          {/* outer glow halo */}
+          <div className="absolute -inset-8 rounded-[3rem] blur-3xl opacity-50 -z-10" style={{ background: `radial-gradient(circle, ${color}, transparent 70%)` }} />
+
+          {/* Flying bird */}
+          <div className="absolute -inset-20 pointer-events-none overflow-visible">
+            <div className="absolute top-1/2 left-1/2">
+              <GlowingBird color={color} size={48} />
+            </div>
+          </div>
+
+          <div
+            className="w-24 h-24 mx-auto rounded-full flex items-center justify-center mb-6 animate-pulse-glow relative"
+            style={{ background: `linear-gradient(135deg, ${color}, #ffffff44)`, ["--glow-color" as any]: glow }}
+          >
+            <Check className="w-12 h-12 text-black" strokeWidth={3} />
+            <span className="absolute inset-0 rounded-full animate-ping" style={{ background: color, opacity: 0.3 }} />
+          </div>
+
+          <h2 className="text-4xl font-extrabold mb-2 text-shine">Vote Submitted</h2>
+          <p className="text-2xl font-semibold text-white mb-2">Successfully</p>
+          <p className="text-white/60 mb-8">Thank you for participating</p>
+
+          {/* Countdown */}
+          <p className="text-[10px] uppercase tracking-[0.3em] text-white/40 mb-3">Preparing for next student</p>
+          <CountdownRing seconds={5} color={color} onDone={onDone} />
         </div>
-        <h2 className="text-3xl font-bold text-gradient-luxury mb-2">Vote Submitted</h2>
-        <p className="text-white/60">Thank you for shaping the future.</p>
       </div>
     </div>
   );
