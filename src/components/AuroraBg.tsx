@@ -1,3 +1,5 @@
+import { StarField } from "./LightRays";
+
 export function AuroraBg() {
   return (
     <div className="aurora-bg">
@@ -7,6 +9,7 @@ export function AuroraBg() {
       <div className="aurora-blob" style={{ bottom: "-10%", left: "-10%", width: 500, height: 500, background: "#22c55e", animationDelay: "6s" }} />
       <div className="aurora-blob" style={{ bottom: "-10%", right: "-10%", width: 500, height: 500, background: "#f97316", animationDelay: "9s" }} />
       <div className="aurora-blob" style={{ top: "30%", left: "40%", width: 400, height: 400, background: "#8b5cf6", opacity: 0.3, animationDelay: "12s" }} />
+      <StarField count={50} />
     </div>
   );
 }
