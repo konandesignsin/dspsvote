@@ -1,6 +1,6 @@
-export function GlowingBird({ color = "#fde68a", size = 56 }: { color?: string; size?: number }) {
+export function GlowingBird({ color = "#fde68a", size = 56, path = 1, opacity = 0.9 }: { color?: string; size?: number; path?: 1 | 2 | 3; opacity?: number }) {
   return (
-    <div className="bird-wrap" style={{ width: size, height: size, left: "50%", top: "50%" }}>
+    <div className={`bird-wrap path-${path}`} style={{ width: size, height: size, left: "50%", top: "50%", opacity }}>
       <svg viewBox="0 0 80 60" width={size} height={size} fill="none">
         <defs>
           <radialGradient id="bg-body" cx="50%" cy="50%" r="50%">
@@ -22,6 +22,40 @@ export function GlowingBird({ color = "#fde68a", size = 56 }: { color?: string; 
           <path d="M40 28 Q50 8 64 14 Q54 22 40 30 Z" fill={color} opacity="0.85" />
         </g>
       </svg>
+    </div>
+  );
+}
+
+export function Bokeh({ count = 18 }: { count?: number }) {
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      {Array.from({ length: count }).map((_, i) => {
+        const size = 40 + ((i * 17) % 80);
+        const left = (i * 23) % 100;
+        const top = (i * 47) % 100;
+        const dx = ((i * 11) % 60) - 30;
+        const dy = ((i * 19) % 60) - 30;
+        const dur = 8 + ((i * 1.7) % 8);
+        const delay = (i * 0.4) % 5;
+        const op = 0.25 + ((i * 0.07) % 0.4);
+        return (
+          <span
+            key={i}
+            className="bokeh"
+            style={{
+              left: `${left}%`,
+              top: `${top}%`,
+              width: size,
+              height: size,
+              animationDuration: `${dur}s`,
+              animationDelay: `${delay}s`,
+              ["--bk-dx" as any]: `${dx}px`,
+              ["--bk-dy" as any]: `${dy}px`,
+              ["--bk-op" as any]: op,
+            }}
+          />
+        );
+      })}
     </div>
   );
 }
