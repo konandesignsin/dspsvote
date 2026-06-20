@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { AuroraBg, Particles } from "@/components/AuroraBg";
 import { TiltGlass } from "@/components/TiltGlass";
 import { HouseLockBadge } from "@/components/HouseLockBadge";
-import { GlowingBird, GoldDust } from "@/components/GlowingBird";
+import { GlowingBird, GoldDust, Bokeh } from "@/components/GlowingBird";
 import { LightRays, StarField } from "@/components/LightRays";
 import { CountdownRing } from "@/components/CountdownRing";
 import { PremiumButton } from "@/components/PremiumButton";
@@ -287,47 +287,101 @@ function VotePage() {
 
 function SuccessOverlay({ color, glow, onDone }: { color: string; glow: string; onDone: () => void }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-3xl" style={{ background: "rgba(5,4,21,0.85)" }}>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center"
+      style={{
+        background: "rgba(5,4,21,0.6)",
+        backdropFilter: "blur(28px) saturate(150%)",
+        animation: "fade-up 0.5s ease-out both",
+      }}
+    >
       {/* Magical environment */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute inset-0" style={{
-          background: `radial-gradient(ellipse at center, ${color}33 0%, transparent 60%), radial-gradient(ellipse at 20% 30%, rgba(253,224,71,0.25), transparent 50%), radial-gradient(ellipse at 80% 70%, ${color}22, transparent 50%)`
-        }} />
-        <StarField count={120} />
-        <LightRays color={`${color}88`} />
-        <GoldDust count={40} />
+        <div
+          className="absolute inset-0 animate-breathe"
+          style={{
+            background: `radial-gradient(ellipse at center, ${color}40 0%, transparent 55%), radial-gradient(ellipse at 15% 25%, rgba(253,224,71,0.28), transparent 50%), radial-gradient(ellipse at 85% 75%, ${color}33, transparent 50%), radial-gradient(ellipse at 60% 90%, rgba(167,139,250,0.22), transparent 50%)`,
+          }}
+        />
+        <StarField count={140} />
+        <Bokeh count={22} />
+        <LightRays color={`${color}99`} />
+        <GoldDust count={55} />
         <Particles count={50} color={color} />
+
+        {/* Aurora waves */}
+        <div className="absolute inset-0 opacity-50">
+          <div className="aurora-blob" style={{ top: "10%", left: "10%", width: 600, height: 600, background: color }} />
+          <div className="aurora-blob" style={{ bottom: "10%", right: "10%", width: 600, height: 600, background: "#fde68a", animationDelay: "4s" }} />
+          <div className="aurora-blob" style={{ top: "40%", left: "50%", width: 500, height: 500, background: "#a78bfa", opacity: 0.4, animationDelay: "8s" }} />
+        </div>
+
+        {/* Three flying birds around popup */}
+        <div className="absolute top-1/2 left-1/2 pointer-events-none">
+          <GlowingBird color="#fde68a" size={42} path={1} opacity={0.85} />
+          <GlowingBird color={color} size={36} path={2} opacity={0.75} />
+          <GlowingBird color="#ffffff" size={30} path={3} opacity={0.6} />
+        </div>
       </div>
 
-      {/* Center popup */}
-      <div className="relative animate-fade-up" style={{ animation: "fade-up 0.6s ease-out both, breathe 4s ease-in-out infinite 0.6s" }}>
-        <div className="glass-strong rounded-[2.5rem] px-12 py-12 text-center relative overflow-visible max-w-md min-w-[340px]"
-          style={{ boxShadow: `0 30px 100px ${glow}, 0 0 80px ${glow}, inset 0 1px 0 rgba(255,255,255,0.25)` }}
-        >
-          {/* outer glow halo */}
-          <div className="absolute -inset-8 rounded-[3rem] blur-3xl opacity-50 -z-10" style={{ background: `radial-gradient(circle, ${color}, transparent 70%)` }} />
+      {/* Glow burst from center */}
+      <div
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full animate-glow-burst pointer-events-none"
+        style={{ background: `radial-gradient(circle, ${color}, transparent 70%)` }}
+      />
+      <div
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full animate-glow-burst pointer-events-none"
+        style={{ background: `radial-gradient(circle, #fde68a, transparent 70%)`, animationDelay: "0.3s" }}
+      />
 
-          {/* Flying bird */}
-          <div className="absolute -inset-20 pointer-events-none overflow-visible">
-            <div className="absolute top-1/2 left-1/2">
-              <GlowingBird color={color} size={48} />
-            </div>
+      {/* Center popup */}
+      <div className="relative animate-popup-in">
+        <div
+          className="glass-strong rounded-[2.5rem] px-12 py-12 text-center relative overflow-visible max-w-md min-w-[360px] animate-float-y"
+          style={{
+            boxShadow: `0 30px 120px ${glow}, 0 0 100px ${glow}, 0 0 200px rgba(253,224,71,0.25), inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -1px 0 rgba(255,255,255,0.05)`,
+            background: `linear-gradient(135deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.04) 50%, ${color}15 100%)`,
+          }}
+        >
+          {/* multi-layer glow halo */}
+          <div className="absolute -inset-12 rounded-[3.5rem] blur-3xl opacity-60 -z-10" style={{ background: `radial-gradient(circle, ${color}, transparent 70%)` }} />
+          <div className="absolute -inset-6 rounded-[3rem] blur-2xl opacity-40 -z-10" style={{ background: `radial-gradient(circle, #fde68a, transparent 70%)` }} />
+
+          {/* Top reflective highlight */}
+          <div className="absolute inset-x-8 top-0 h-px" style={{ background: `linear-gradient(to right, transparent, rgba(255,255,255,0.6), transparent)` }} />
+
+          {/* Shimmer sweep */}
+          <div className="absolute inset-0 rounded-[2.5rem] overflow-hidden pointer-events-none">
+            <div
+              className="absolute inset-y-0 w-1/3"
+              style={{
+                background: "linear-gradient(110deg, transparent, rgba(255,255,255,0.15), transparent)",
+                animation: "shine-sweep 3.5s ease-in-out infinite",
+              }}
+            />
           </div>
 
           <div
-            className="w-24 h-24 mx-auto rounded-full flex items-center justify-center mb-6 animate-pulse-glow relative"
-            style={{ background: `linear-gradient(135deg, ${color}, #ffffff44)`, ["--glow-color" as any]: glow }}
+            className="w-24 h-24 mx-auto rounded-full flex items-center justify-center mb-6 relative animate-pulse-glow"
+            style={{
+              background: `linear-gradient(135deg, ${color}, #fde68a)`,
+              ["--glow-color" as any]: glow,
+              boxShadow: `0 0 50px ${glow}, inset 0 2px 8px rgba(255,255,255,0.4)`,
+            }}
           >
-            <Check className="w-12 h-12 text-black" strokeWidth={3} />
-            <span className="absolute inset-0 rounded-full animate-ping" style={{ background: color, opacity: 0.3 }} />
+            <Check className="w-12 h-12 text-black relative z-10" strokeWidth={3} />
+            <span className="absolute inset-0 rounded-full animate-ping" style={{ background: color, opacity: 0.4 }} />
+            <span className="absolute -inset-2 rounded-full animate-ping" style={{ background: "#fde68a", opacity: 0.2, animationDelay: "0.5s" }} />
           </div>
 
-          <h2 className="text-4xl font-extrabold mb-2 text-shine">Vote Submitted</h2>
-          <p className="text-2xl font-semibold text-white mb-2">Successfully</p>
-          <p className="text-white/60 mb-8">Thank you for participating</p>
+          <h2 className="text-4xl md:text-5xl font-extrabold mb-1 text-shine tracking-tight">
+            Vote Submitted
+          </h2>
+          <p className="text-2xl font-bold text-shine mb-3">Successfully</p>
+          <p className="text-white/70 mb-8 text-base">Thank you for participating</p>
 
           {/* Countdown */}
-          <p className="text-[10px] uppercase tracking-[0.3em] text-white/40 mb-3">Preparing for next student</p>
+          <p className="text-[10px] uppercase tracking-[0.35em] text-white/50 mb-4">Preparing for next student</p>
           <CountdownRing seconds={5} color={color} onDone={onDone} />
         </div>
       </div>
