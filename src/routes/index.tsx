@@ -3,7 +3,9 @@ import { useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { HOUSES, store, seedIfEmpty, useStore, type House } from "@/lib/election";
 import { AuroraBg, Particles } from "@/components/AuroraBg";
-import { Settings, Lock, Unlock, Sparkles } from "lucide-react";
+import { TiltGlass } from "@/components/TiltGlass";
+import { PremiumButton } from "@/components/PremiumButton";
+import { Settings, Lock, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -20,13 +22,11 @@ export const Route = createFileRoute("/")({
 function Index() {
   const navigate = useNavigate();
   const [pendingHouse, setPendingHouse] = useState<House | null>(null);
-  const [lock, setLock] = useState<House | null>(null);
   const houseSymbols = useStore(() => store.getHouseSymbols());
 
   useEffect(() => {
     seedIfEmpty();
     const l = store.getLock();
-    setLock(l);
     if (l) {
       // redirect immediately if locked
       navigate({ to: "/vote/$house", params: { house: l } });
@@ -60,14 +60,6 @@ function Index() {
               <p className="text-xs text-white/40">2026 · Pick your house</p>
             </div>
           </div>
-          {lock && (
-            <button
-              onClick={() => { store.setLock(null); setLock(null); }}
-              className="glass rounded-full px-4 py-2 text-xs text-white/80 flex items-center gap-2 hover:scale-105 transition"
-            >
-              <Unlock className="w-3.5 h-3.5" /> Unlock device
-            </button>
-          )}
         </header>
 
         {/* Hero */}
@@ -83,10 +75,12 @@ function Index() {
         {/* House grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto w-full">
           {HOUSES.map((h, i) => (
-            <button
+            <TiltGlass
               key={h.id}
+              as="button"
+              intensity={14}
               onClick={() => chooseHouse(h.id)}
-              className={`house-card-${h.id} group relative glass rounded-3xl p-8 text-left transition-all duration-500 hover:-translate-y-3 hover:scale-[1.02] animate-fade-up cursor-pointer overflow-hidden`}
+              className={`house-card-${h.id} group glass rounded-3xl p-8 text-left animate-fade-up cursor-pointer overflow-hidden`}
               style={{ animationDelay: `${0.2 + i * 0.1}s` }}
             >
               {/* glow halo */}
@@ -131,7 +125,7 @@ function Index() {
                   Vote now <span className="transition-transform group-hover:translate-x-1">→</span>
                 </div>
               </div>
-            </button>
+            </TiltGlass>
           ))}
         </div>
 
@@ -160,19 +154,19 @@ function Index() {
                 Lock this computer to <span className="font-semibold" style={{ color: HOUSES.find((x) => x.id === pendingHouse)!.color }}>{HOUSES.find((x) => x.id === pendingHouse)!.name}</span> so the next students can vote here without re-selecting. (This setting is local to this device only.)
               </p>
               <div className="flex flex-col gap-3">
-                <button
+                <PremiumButton
                   onClick={() => confirm(true)}
                   className="glass rounded-2xl py-3 px-5 font-medium text-white hover:scale-[1.02] transition flex items-center justify-center gap-2"
                   style={{ boxShadow: `0 0 30px ${HOUSES.find((x) => x.id === pendingHouse)!.glow}` }}
                 >
                   <Lock className="w-4 h-4" /> Enable Lock
-                </button>
-                <button
+                </PremiumButton>
+                <PremiumButton
                   onClick={() => confirm(false)}
                   className="rounded-2xl py-3 px-5 text-white/70 hover:text-white transition"
                 >
                   Continue Without Lock
-                </button>
+                </PremiumButton>
                 <button onClick={() => setPendingHouse(null)} className="text-xs text-white/40 hover:text-white/60 mt-2">Cancel</button>
               </div>
             </div>
