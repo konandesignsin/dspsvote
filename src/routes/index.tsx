@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useNavigate, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { HOUSES, store, seedIfEmpty, useStore, type House } from "@/lib/election";
 import { AuroraBg, Particles } from "@/components/AuroraBg";
 import { TiltGlass } from "@/components/TiltGlass";
@@ -23,13 +23,19 @@ function Index() {
   const navigate = useNavigate();
   const [pendingHouse, setPendingHouse] = useState<House | null>(null);
   const houseSymbols = useStore(() => store.getHouseSymbols());
+  // Synchronously detect a device lock before first paint to avoid a flash
+  // of the home page when this computer is already locked to a house.
+  const [redirecting, setRedirecting] = useState<House | null>(() => {
+    if (typeof window === "undefined") return null;
+    try { return store.getLock(); } catch { return null; }
+  });
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     seedIfEmpty();
     const l = store.getLock();
     if (l) {
-      // redirect immediately if locked
-      navigate({ to: "/vote/$house", params: { house: l } });
+      setRedirecting(l);
+      navigate({ to: "/vote/$house", params: { house: l }, replace: true });
     }
   }, [navigate]);
 
@@ -40,7 +46,16 @@ function Index() {
   function confirm(useLock: boolean) {
     if (!pendingHouse) return;
     if (useLock) store.setLock(pendingHouse);
-    navigate({ to: "/vote/$house", params: { house: pendingHouse } });
+    navigate({ to: "/vote/$house", params: { house: pendingHouse }, replace: useLock });
+  }
+
+  // Hide the home page while we're bouncing to the locked house
+  if (redirecting) {
+    return (
+      <div className="relative min-h-screen w-full overflow-hidden">
+        <AuroraBg />
+      </div>
+    );
   }
 
   return (
