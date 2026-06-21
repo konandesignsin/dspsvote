@@ -22,7 +22,7 @@ export const Route = createFileRoute("/admin")({
 function AdminPage() {
   const candidates = useStore(() => store.getCandidates());
   const votes = useStore(() => store.getVotes());
-  const [activeTab, setActiveTab] = useState<"dashboard" | "candidates" | "houses" | "results">("dashboard");
+  const [activeTab, setActiveTab] = useState<"dashboard" | "candidates" | "houses" | "results" | "device">("dashboard");
 
   const totals = useMemo(() => {
     const byHouse: Record<string, number> = {};
@@ -55,7 +55,7 @@ function AdminPage() {
         </header>
 
         <nav className="glass rounded-full p-1.5 inline-flex flex-wrap gap-1 mb-8">
-          {(["dashboard", "candidates", "houses", "results"] as const).map((t) => (
+          {(["dashboard", "candidates", "houses", "results", "device"] as const).map((t) => (
             <button
               key={t}
               onClick={() => setActiveTab(t)}
@@ -63,7 +63,7 @@ function AdminPage() {
                 activeTab === t ? "bg-white/15 text-white" : "text-white/50 hover:text-white"
               }`}
             >
-              {t === "houses" ? "House Management" : t[0].toUpperCase() + t.slice(1)}
+              {t === "houses" ? "House Management" : t === "device" ? "Device Settings" : t[0].toUpperCase() + t.slice(1)}
             </button>
           ))}
         </nav>
@@ -72,6 +72,7 @@ function AdminPage() {
         {activeTab === "candidates" && <CandidatesTab candidates={candidates} />}
         {activeTab === "houses" && <HousesTab />}
         {activeTab === "results" && <ResultsTab candidates={candidates} totals={totals} />}
+        {activeTab === "device" && <DeviceTab />}
       </div>
     </div>
   );
