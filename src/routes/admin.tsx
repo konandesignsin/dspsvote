@@ -10,7 +10,8 @@ import {
   type House,
   type Role,
 } from "@/lib/election";
-import { Pencil, Trash2, Plus, Download, RotateCcw, Home, X } from "lucide-react";
+import { Pencil, Trash2, Plus, Download, RotateCcw, Home, X, Lock, Unlock, Trash } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, PieChart, Pie, Cell, Legend } from "recharts";
 import { ImageUpload } from "@/components/ImageUpload";
 
@@ -22,7 +23,7 @@ export const Route = createFileRoute("/admin")({
 function AdminPage() {
   const candidates = useStore(() => store.getCandidates());
   const votes = useStore(() => store.getVotes());
-  const [activeTab, setActiveTab] = useState<"dashboard" | "candidates" | "houses" | "results">("dashboard");
+  const [activeTab, setActiveTab] = useState<"dashboard" | "candidates" | "houses" | "results" | "device">("dashboard");
 
   const totals = useMemo(() => {
     const byHouse: Record<string, number> = {};
@@ -55,7 +56,7 @@ function AdminPage() {
         </header>
 
         <nav className="glass rounded-full p-1.5 inline-flex flex-wrap gap-1 mb-8">
-          {(["dashboard", "candidates", "houses", "results"] as const).map((t) => (
+          {(["dashboard", "candidates", "houses", "results", "device"] as const).map((t) => (
             <button
               key={t}
               onClick={() => setActiveTab(t)}
@@ -63,7 +64,7 @@ function AdminPage() {
                 activeTab === t ? "bg-white/15 text-white" : "text-white/50 hover:text-white"
               }`}
             >
-              {t === "houses" ? "House Management" : t[0].toUpperCase() + t.slice(1)}
+              {t === "houses" ? "House Management" : t === "device" ? "Device Settings" : t[0].toUpperCase() + t.slice(1)}
             </button>
           ))}
         </nav>
@@ -72,6 +73,7 @@ function AdminPage() {
         {activeTab === "candidates" && <CandidatesTab candidates={candidates} />}
         {activeTab === "houses" && <HousesTab />}
         {activeTab === "results" && <ResultsTab candidates={candidates} totals={totals} />}
+        {activeTab === "device" && <DeviceTab />}
       </div>
     </div>
   );
@@ -427,6 +429,109 @@ function HousesTab() {
             </div>
           );
         })}
+      </div>
+    </div>
+  );
+}
+
+function DeviceTab() {
+  const lock = useStore(() => store.getLock());
+  const navigate = useNavigate();
+  const info = lock ? HOUSES.find((h) => h.id === lock)! : null;
+
+  return (
+    <div className="animate-fade-up max-w-2xl">
+      <div
+        className="glass-strong rounded-3xl p-8 relative overflow-hidden"
+        style={{
+          boxShadow: info
+            ? `0 30px 80px -20px ${info.glow}, inset 0 1px 0 rgba(255,255,255,0.12)`
+            : `0 30px 80px -20px rgba(167,139,250,0.3), inset 0 1px 0 rgba(255,255,255,0.12)`,
+          border: info ? `1px solid ${info.color}33` : "1px solid rgba(255,255,255,0.08)",
+        }}
+      >
+        <div
+          className="absolute -top-24 -right-24 w-64 h-64 rounded-full blur-3xl opacity-40 pointer-events-none"
+          style={{ background: info?.color ?? "#a78bfa" }}
+        />
+
+        <p className="text-xs uppercase tracking-[0.4em] text-white/40 mb-2">Device Settings</p>
+        <h2 className="text-3xl font-bold text-white mb-6">House Lock</h2>
+
+        <div className="glass rounded-2xl p-6 mb-6 flex items-center gap-4">
+          <div
+            className="w-14 h-14 rounded-2xl flex items-center justify-center"
+            style={{
+              background: info ? `linear-gradient(135deg, ${info.color}40, ${info.color}10)` : "rgba(255,255,255,0.05)",
+              boxShadow: info ? `0 0 30px ${info.glow}` : undefined,
+            }}
+          >
+            {info ? <Lock className="w-6 h-6" style={{ color: info.color }} /> : <Unlock className="w-6 h-6 text-white/40" />}
+          </div>
+          <div className="flex-1">
+            <p className="text-[10px] uppercase tracking-widest text-white/40">Current Status</p>
+            {info ? (
+              <p className="text-xl font-bold" style={{ color: info.color }}>
+                Locked · {info.name} House
+              </p>
+            ) : (
+              <p className="text-xl font-bold text-white/70">Unlocked</p>
+            )}
+          </div>
+        </div>
+
+        <p className="text-xs text-white/40 mb-5 leading-relaxed">
+          These actions only affect <span className="text-white/70 font-semibold">this device</span>. Locks are stored
+          locally in this browser and never synchronized with other computers.
+        </p>
+
+        <div className="grid sm:grid-cols-2 gap-3">
+          {HOUSES.map((h) => (
+            <button
+              key={h.id}
+              onClick={() => { store.setLock(h.id); }}
+              className="glass rounded-2xl px-4 py-3 text-sm font-medium text-white flex items-center gap-3 hover:scale-[1.02] transition"
+              style={{
+                border: lock === h.id ? `1px solid ${h.color}` : `1px solid ${h.color}22`,
+                boxShadow: lock === h.id ? `0 0 30px ${h.glow}` : undefined,
+              }}
+            >
+              <span className="w-2.5 h-2.5 rounded-full" style={{ background: h.color, boxShadow: `0 0 10px ${h.glow}` }} />
+              Lock to {h.name}
+              {lock === h.id && <Lock className="w-3.5 h-3.5 ml-auto" style={{ color: h.color }} />}
+            </button>
+          ))}
+        </div>
+
+        <div className="mt-6 flex flex-wrap gap-3">
+          <button
+            onClick={() => { store.setLock(null); }}
+            disabled={!lock}
+            className="glass rounded-2xl px-5 py-3 text-sm font-medium text-white flex items-center gap-2 hover:scale-[1.02] transition disabled:opacity-30 disabled:cursor-not-allowed"
+          >
+            <Unlock className="w-4 h-4" /> Unlock Device
+          </button>
+          <button
+            onClick={() => {
+              if (!confirm("Clear all local lock data on this device?")) return;
+              store.setLock(null);
+              try { localStorage.removeItem("election.deviceLock"); } catch {}
+            }}
+            className="glass rounded-2xl px-5 py-3 text-sm font-medium text-red-300 flex items-center gap-2 hover:scale-[1.02] transition"
+            style={{ border: "1px solid rgba(248,113,113,0.25)" }}
+          >
+            <Trash className="w-4 h-4" /> Clear Lock Data
+          </button>
+          {lock && (
+            <button
+              onClick={() => navigate({ to: "/vote/$house", params: { house: lock } })}
+              className="glass rounded-2xl px-5 py-3 text-sm font-medium text-white flex items-center gap-2 hover:scale-[1.02] transition ml-auto"
+              style={info ? { boxShadow: `0 0 30px ${info.glow}` } : undefined}
+            >
+              Go to {info?.name} Voting →
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
