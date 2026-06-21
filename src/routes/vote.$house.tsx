@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { AuroraBg, Particles } from "@/components/AuroraBg";
 import { TiltGlass } from "@/components/TiltGlass";
 import { HouseLockBadge } from "@/components/HouseLockBadge";
@@ -44,6 +44,16 @@ function VotePage() {
   const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => { seedIfEmpty(); }, []);
+
+  // Strict device-lock enforcement: if this computer is locked to a
+  // different house, bounce to the locked house. Lock is local-only.
+  useLayoutEffect(() => {
+    if (typeof window === "undefined") return;
+    const lock = store.getLock();
+    if (lock && lock !== house) {
+      navigate({ to: "/vote/$house", params: { house: lock }, replace: true });
+    }
+  }, [house, navigate]);
 
   if (!houseInfo) {
     return (
