@@ -218,14 +218,18 @@ function VotePage() {
                               <Check className="w-5 h-5 text-black" strokeWidth={3} />
                             </div>
                           )}
-                          {/* Circular profile */}
+                          {/* Circular profile — hero of the card */}
                           <div
-                            className="w-24 h-24 rounded-full overflow-hidden flex items-center justify-center text-3xl font-bold mb-3 ring-2 transition-all duration-300 group-hover:scale-105"
+                            className={`relative rounded-full overflow-hidden flex items-center justify-center font-bold mb-3 ring-2 transition-all duration-500 ${
+                              selected ? "w-36 h-36 sm:w-40 sm:h-40 text-5xl" : "w-32 h-32 sm:w-36 sm:h-36 text-4xl group-hover:scale-105"
+                            }`}
                             style={{
                               background: `linear-gradient(135deg, ${accent}40, ${accent}10)`,
                               color: accent,
-                              boxShadow: `0 0 30px ${glow}`,
-                              ["--tw-ring-color" as any]: `${accent}80`,
+                              boxShadow: selected
+                                ? `0 0 55px ${glow}, 0 12px 35px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.3)`
+                                : `0 0 32px ${glow}, 0 10px 28px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.18)`,
+                              ["--tw-ring-color" as any]: `${accent}99`,
                             }}
                           >
                             {c.photo ? (
@@ -233,17 +237,26 @@ function VotePage() {
                             ) : (
                               c.name.slice(0, 1).toUpperCase()
                             )}
+                            {/* soft inner glow ring */}
+                            <span className="pointer-events-none absolute inset-0 rounded-full" style={{ boxShadow: `inset 0 0 22px ${accent}55` }} />
                           </div>
-                          {/* Symbol */}
+                          {/* Circular symbol badge */}
                           {c.symbol && (
                             <div
-                              className="w-10 h-10 mb-2 flex items-center justify-center rounded-lg"
-                              style={{ filter: `drop-shadow(0 0 8px ${glow})` }}
+                              className={`relative w-14 h-14 mb-3 rounded-full overflow-hidden flex items-center justify-center transition-all duration-500 ${
+                                selected ? "animate-breathe" : ""
+                              }`}
+                              style={{
+                                background: "linear-gradient(135deg, rgba(255,255,255,0.14), rgba(255,255,255,0.04))",
+                                backdropFilter: "blur(14px) saturate(160%)",
+                                border: `1px solid ${accent}66`,
+                                boxShadow: `0 0 18px ${glow}, 0 6px 14px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.25)`,
+                              }}
                             >
                               {c.symbol.startsWith("data:") || c.symbol.startsWith("http") ? (
-                                <img src={c.symbol} alt="" className="w-full h-full object-contain" />
+                                <img src={c.symbol} alt="" className="w-full h-full object-cover" />
                               ) : (
-                                <span className="text-2xl">{c.symbol}</span>
+                                <span className="text-2xl leading-none">{c.symbol}</span>
                               )}
                             </div>
                           )}
