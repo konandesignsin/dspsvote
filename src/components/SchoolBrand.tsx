@@ -28,7 +28,7 @@ export function SchoolBrand({
       <SchoolLogoMark url={logo} size={dims} />
       {showName && (
         <div
-          className={`relative mt-${size === "hero" ? 8 : 4} ${
+          className={`relative ${size === "hero" ? "mt-8" : "mt-4"} ${
             size === "hero" ? "px-8 py-6 md:px-14 md:py-8" : "px-4 py-2"
           } glass-strong rounded-3xl overflow-hidden`}
           style={{
