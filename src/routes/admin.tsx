@@ -14,6 +14,8 @@ import { Pencil, Trash2, Plus, Download, RotateCcw, Home, X, Lock, Unlock, Trash
 import { useNavigate } from "@tanstack/react-router";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, PieChart, Pie, Cell, Legend } from "recharts";
 import { ImageUpload } from "@/components/ImageUpload";
+import { SchoolLogoMark } from "@/components/SchoolBrand";
+import { SCHOOL_NAME } from "@/lib/election";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Admin — House Elections" }] }),
@@ -23,7 +25,7 @@ export const Route = createFileRoute("/admin")({
 function AdminPage() {
   const candidates = useStore(() => store.getCandidates());
   const votes = useStore(() => store.getVotes());
-  const [activeTab, setActiveTab] = useState<"dashboard" | "candidates" | "houses" | "results" | "device">("dashboard");
+  const [activeTab, setActiveTab] = useState<"dashboard" | "candidates" | "houses" | "branding" | "results" | "device">("dashboard");
 
   const totals = useMemo(() => {
     const byHouse: Record<string, number> = {};
@@ -56,7 +58,7 @@ function AdminPage() {
         </header>
 
         <nav className="glass rounded-full p-1.5 inline-flex flex-wrap gap-1 mb-8">
-          {(["dashboard", "candidates", "houses", "results", "device"] as const).map((t) => (
+          {(["dashboard", "candidates", "houses", "branding", "results", "device"] as const).map((t) => (
             <button
               key={t}
               onClick={() => setActiveTab(t)}
@@ -64,7 +66,7 @@ function AdminPage() {
                 activeTab === t ? "bg-white/15 text-white" : "text-white/50 hover:text-white"
               }`}
             >
-              {t === "houses" ? "House Management" : t === "device" ? "Device Settings" : t[0].toUpperCase() + t.slice(1)}
+              {t === "houses" ? "House Management" : t === "device" ? "Device Settings" : t === "branding" ? "School Branding" : t[0].toUpperCase() + t.slice(1)}
             </button>
           ))}
         </nav>
@@ -72,6 +74,7 @@ function AdminPage() {
         {activeTab === "dashboard" && <Dashboard candidates={candidates} totals={totals} />}
         {activeTab === "candidates" && <CandidatesTab candidates={candidates} />}
         {activeTab === "houses" && <HousesTab />}
+        {activeTab === "branding" && <BrandingTab />}
         {activeTab === "results" && <ResultsTab candidates={candidates} totals={totals} />}
         {activeTab === "device" && <DeviceTab />}
       </div>
@@ -114,6 +117,55 @@ function Dashboard({ candidates, totals }: { candidates: Candidate[]; totals: { 
               <Legend wrapperStyle={{ color: "white", fontSize: 12 }} />
             </PieChart>
           </ResponsiveContainer>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function BrandingTab() {
+  const logo = useStore(() => store.getSchoolLogo());
+  return (
+    <div className="animate-fade-up max-w-3xl">
+      <div className="glass rounded-3xl p-6 mb-6">
+        <h3 className="text-white font-semibold text-lg mb-1">School Branding</h3>
+        <p className="text-white/50 text-sm">
+          Upload the official school logo. It will appear on the home page,
+          voting headers, success popups, and results.
+        </p>
+      </div>
+      <div
+        className="glass-strong rounded-3xl p-8 relative overflow-hidden"
+        style={{
+          boxShadow:
+            "0 30px 80px -20px rgba(253,224,71,0.30), inset 0 1px 0 rgba(255,255,255,0.15)",
+        }}
+      >
+        <div
+          className="absolute -top-24 -right-24 w-64 h-64 rounded-full blur-3xl opacity-40 pointer-events-none"
+          style={{ background: "#fde68a" }}
+        />
+        <div className="relative grid sm:grid-cols-[auto,1fr] gap-8 items-center">
+          <SchoolLogoMark url={logo} size={140} />
+          <div className="space-y-5">
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.4em] text-white/40 mb-1">School</p>
+              <p className="text-2xl font-bold text-shine">{SCHOOL_NAME}</p>
+            </div>
+            <ImageUpload
+              value={logo || undefined}
+              onChange={(v) => store.setSchoolLogo(v)}
+              label="Upload school logo"
+              shape="circle"
+              accept="image/png,image/svg+xml,image/webp,image/jpeg"
+              maxSize={1024}
+              preserveTransparency
+            />
+            <p className="text-xs text-white/40 leading-relaxed">
+              Use a square PNG with a transparent background for best results.
+              Stored locally on this device.
+            </p>
+          </div>
         </div>
       </div>
     </div>

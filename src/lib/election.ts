@@ -37,6 +37,10 @@ const CANDIDATES_KEY = "election.candidates";
 const VOTES_KEY = "election.votes";
 const LOCK_KEY = "election.deviceLock"; // local-only house lock
 const HOUSE_SYMBOLS_KEY = "election.houseSymbols";
+const SCHOOL_LOGO_KEY = "election.schoolLogo";
+
+export const SCHOOL_NAME = "DAWN SHIKSHALAYA PUBLIC SCHOOL";
+export const SCHOOL_SUBTITLE = "HOUSE ELECTION 2026";
 
 function read<T>(key: string, fallback: T): T {
   if (typeof window === "undefined") return fallback;
@@ -84,6 +88,8 @@ export const store = {
     else delete cur[h];
     write(HOUSE_SYMBOLS_KEY, cur);
   },
+  getSchoolLogo: (): string | null => read<string | null>(SCHOOL_LOGO_KEY, null),
+  setSchoolLogo: (dataUrl: string | null) => write(SCHOOL_LOGO_KEY, dataUrl),
 };
 
 export function useStore<T>(selector: () => T): T {

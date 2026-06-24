@@ -7,6 +7,7 @@ import { GlowingBird, GoldDust, Bokeh } from "@/components/GlowingBird";
 import { LightRays, StarField } from "@/components/LightRays";
 import { PremiumButton } from "@/components/PremiumButton";
 import { CountdownRing } from "@/components/CountdownRing";
+import { SchoolLogoMark } from "@/components/SchoolBrand";
 import {
   HOUSES,
   ROLE_LABEL,
@@ -37,6 +38,7 @@ function VotePage() {
   const { house } = Route.useParams();
   const navigate = useNavigate();
   const houseInfo = HOUSES.find((h) => h.id === house) as (typeof HOUSES)[number] | undefined;
+  const schoolLogo = useStore(() => store.getSchoolLogo());
 
   const candidates = useStore(() => store.getCandidates());
   const [selections, setSelections] = useState<Partial<Record<Role, string>>>({});
@@ -126,15 +128,18 @@ function VotePage() {
 
       <div className="relative z-10 max-w-6xl mx-auto px-6 py-8">
         {/* Header */}
-        <header className="flex items-center justify-between mb-10 animate-fade-up">
+        <header className="flex items-center justify-between mb-10 animate-fade-up gap-3">
           <Link to="/" className="glass rounded-full px-4 py-2 text-xs text-white/70 hover:text-white flex items-center gap-2 transition hover:scale-105">
             <Home className="w-3.5 h-3.5" /> Home
           </Link>
-          <div className="text-center">
-            <p className="text-xs uppercase tracking-widest text-white/40">Voting as</p>
-            <h1 className="text-2xl md:text-3xl font-bold" style={{ color: houseColor }}>
-              {houseInfo.name} House
-            </h1>
+          <div className="flex items-center gap-4">
+            <SchoolLogoMark url={schoolLogo} size={56} />
+            <div className="text-center">
+              <p className="text-[10px] uppercase tracking-[0.35em] text-white/40">Voting as</p>
+              <h1 className="text-2xl md:text-3xl font-bold" style={{ color: houseColor }}>
+                {houseInfo.name} House
+              </h1>
+            </div>
           </div>
           <div className="w-20" />
         </header>
@@ -322,7 +327,7 @@ function VotePage() {
       )}
 
       {/* Success overlay */}
-      {submitted && <SuccessOverlay color={houseColor} glow={houseGlow} onDone={handleCountdownDone} />}
+      {submitted && <SuccessOverlay color={houseColor} glow={houseGlow} onDone={handleCountdownDone} schoolLogo={schoolLogo} />}
     </div>
   );
 }
@@ -471,7 +476,7 @@ function ReviewOverlay({
   );
 }
 
-function SuccessOverlay({ color, glow, onDone }: { color: string; glow: string; onDone: () => void }) {
+function SuccessOverlay({ color, glow, onDone, schoolLogo }: { color: string; glow: string; onDone: () => void; schoolLogo: string | null }) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center"
@@ -545,6 +550,10 @@ function SuccessOverlay({ color, glow, onDone }: { color: string; glow: string; 
                 animation: "shine-sweep 3.5s ease-in-out infinite",
               }}
             />
+          </div>
+
+          <div className="flex justify-center mb-4">
+            <SchoolLogoMark url={schoolLogo} size={64} />
           </div>
 
           <div
