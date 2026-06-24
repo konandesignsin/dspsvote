@@ -6,6 +6,7 @@ import { HouseLockBadge } from "@/components/HouseLockBadge";
 import { GlowingBird, GoldDust, Bokeh } from "@/components/GlowingBird";
 import { LightRays, StarField } from "@/components/LightRays";
 import { PremiumButton } from "@/components/PremiumButton";
+import { CountdownRing } from "@/components/CountdownRing";
 import {
   HOUSES,
   ROLE_LABEL,
@@ -100,6 +101,7 @@ function VotePage() {
   }
 
   function handleCountdownDone() {
+    window.scrollTo({ top: 0, behavior: "smooth" });
     const lock = store.getLock();
     if (lock) {
       setSubmitted(false);
@@ -564,19 +566,22 @@ function SuccessOverlay({ color, glow, onDone }: { color: string; glow: string; 
           <p className="text-2xl font-bold text-shine mb-3">Successfully</p>
           <p className="text-white/70 mb-8 text-base">Thank you for participating</p>
 
-          {/* Auto-dismiss after ~2s */}
-          <AutoDismiss ms={2000} onDone={onDone} />
-          <p className="text-[10px] uppercase tracking-[0.35em] text-white/50 mt-2">Preparing for next student</p>
+          {/* 3-second countdown for next student */}
+          <div
+            className="mt-8 mx-auto max-w-[240px] glass rounded-[2rem] px-6 py-5 text-center animate-breathe"
+            style={{
+              border: "1px solid rgba(253,224,71,0.25)",
+              boxShadow: "0 0 40px rgba(253,224,71,0.15), inset 0 1px 0 rgba(255,255,255,0.18)",
+              background: "linear-gradient(135deg, rgba(253,224,71,0.10), rgba(255,255,255,0.04))",
+            }}
+          >
+            <p className="text-[10px] uppercase tracking-[0.35em] text-white/60 mb-3">Preparing for Next Student</p>
+            <div className="flex items-center justify-center">
+              <CountdownRing seconds={3} color="#fde68a" onDone={onDone} />
+            </div>
+          </div>
         </div>
       </div>
     </div>
   );
-}
-
-function AutoDismiss({ ms, onDone }: { ms: number; onDone: () => void }) {
-  useEffect(() => {
-    const t = setTimeout(onDone, ms);
-    return () => clearTimeout(t);
-  }, [ms, onDone]);
-  return null;
 }
