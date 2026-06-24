@@ -6,6 +6,7 @@ import { HouseLockBadge } from "@/components/HouseLockBadge";
 import { GlowingBird, GoldDust, Bokeh } from "@/components/GlowingBird";
 import { LightRays, StarField } from "@/components/LightRays";
 import { PremiumButton } from "@/components/PremiumButton";
+import { CountdownRing } from "@/components/CountdownRing";
 import {
   HOUSES,
   ROLE_LABEL,
