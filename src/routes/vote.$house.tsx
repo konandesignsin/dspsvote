@@ -7,6 +7,7 @@ import { GlowingBird, GoldDust, Bokeh } from "@/components/GlowingBird";
 import { LightRays, StarField } from "@/components/LightRays";
 import { PremiumButton } from "@/components/PremiumButton";
 import { CountdownRing } from "@/components/CountdownRing";
+import { SchoolLogoMark } from "@/components/SchoolBrand";
 import {
   HOUSES,
   ROLE_LABEL,
@@ -37,6 +38,7 @@ function VotePage() {
   const { house } = Route.useParams();
   const navigate = useNavigate();
   const houseInfo = HOUSES.find((h) => h.id === house) as (typeof HOUSES)[number] | undefined;
+  const schoolLogo = useStore(() => store.getSchoolLogo());
 
   const candidates = useStore(() => store.getCandidates());
   const [selections, setSelections] = useState<Partial<Record<Role, string>>>({});
