@@ -5,6 +5,7 @@ import { HOUSES, store, seedIfEmpty, useStore, type House } from "@/lib/election
 import { AuroraBg, Particles } from "@/components/AuroraBg";
 import { TiltGlass } from "@/components/TiltGlass";
 import { PremiumButton } from "@/components/PremiumButton";
+import { SchoolBrand } from "@/components/SchoolBrand";
 import { Settings, Lock, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -77,13 +78,18 @@ function Index() {
           </div>
         </header>
 
-        {/* Hero */}
-        <div className="text-center max-w-3xl mx-auto mb-16 animate-fade-up" style={{ animationDelay: "0.1s" }}>
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-gradient-luxury mb-6">
-            Choose Your House
-          </h1>
-          <p className="text-white/60 text-lg">
-            Step into the arena. Cast your vote for the leaders who will shape our school's next chapter.
+        {/* School Identity */}
+        <div
+          className="mx-auto mb-16 animate-fade-up"
+          style={{ animationDelay: "0.1s" }}
+        >
+          <SchoolBrand size="hero" />
+          <p
+            className="text-white/55 text-center text-base md:text-lg mt-8 max-w-2xl mx-auto animate-fade-up"
+            style={{ animationDelay: "0.55s" }}
+          >
+            Step into the arena. Choose your house and cast your vote for the
+            leaders who will shape our school's next chapter.
           </p>
         </div>
 
