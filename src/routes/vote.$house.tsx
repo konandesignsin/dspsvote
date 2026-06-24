@@ -552,6 +552,10 @@ function SuccessOverlay({ color, glow, onDone, schoolLogo }: { color: string; gl
             />
           </div>
 
+          <div className="flex justify-center mb-4">
+            <SchoolLogoMark url={schoolLogo} size={64} />
+          </div>
+
           <div
             className="w-24 h-24 mx-auto rounded-full flex items-center justify-center mb-6 relative animate-pulse-glow"
             style={{
