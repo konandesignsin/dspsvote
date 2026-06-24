@@ -438,6 +438,7 @@ function HousesTab() {
 }
 
 function DeviceTab() {
+  // placeholder anchor — DeviceTab continues below
   const lock = useStore(() => store.getLock());
   const navigate = useNavigate();
   const info = lock ? HOUSES.find((h) => h.id === lock)! : null;
