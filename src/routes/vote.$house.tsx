@@ -5,7 +5,6 @@ import { TiltGlass } from "@/components/TiltGlass";
 import { HouseLockBadge } from "@/components/HouseLockBadge";
 import { GlowingBird, GoldDust, Bokeh } from "@/components/GlowingBird";
 import { LightRays, StarField } from "@/components/LightRays";
-import { CountdownRing } from "@/components/CountdownRing";
 import { PremiumButton } from "@/components/PremiumButton";
 import {
   HOUSES,
@@ -40,6 +39,7 @@ function VotePage() {
 
   const candidates = useStore(() => store.getCandidates());
   const [selections, setSelections] = useState<Partial<Record<Role, string>>>({});
+  const [reviewing, setReviewing] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
@@ -85,13 +85,18 @@ function VotePage() {
     });
   }, [selections, candidates, house]);
 
-  function submit() {
+  function openReview() {
     if (!allFilled) return;
+    setReviewing(true);
+  }
+
+  function confirmVote() {
     setSubmitting(true);
     store.addVote({ voterHouse: house as House, selections });
+    setReviewing(false);
     setTimeout(() => {
       setSubmitted(true);
-    }, 400);
+    }, 350);
   }
 
   function handleCountdownDone() {
@@ -289,7 +294,7 @@ function VotePage() {
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-30">
           <PremiumButton
             disabled={!allFilled || submitting}
-            onClick={submit}
+            onClick={openReview}
             className="glass-strong rounded-full px-10 py-4 font-semibold text-white text-base disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 hover:scale-105 flex items-center gap-3"
             style={allFilled ? {
               boxShadow: `0 0 60px ${houseGlow}, inset 0 1px 0 rgba(255,255,255,0.2)`,
@@ -302,8 +307,164 @@ function VotePage() {
         </div>
       </div>
 
+      {/* Review confirmation overlay */}
+      {reviewing && !submitted && (
+        <ReviewOverlay
+          color={houseColor}
+          glow={houseGlow}
+          selections={selections}
+          candidates={candidates}
+          onEdit={() => setReviewing(false)}
+          onConfirm={confirmVote}
+        />
+      )}
+
       {/* Success overlay */}
       {submitted && <SuccessOverlay color={houseColor} glow={houseGlow} onDone={handleCountdownDone} />}
+    </div>
+  );
+}
+
+function ReviewOverlay({
+  color,
+  glow,
+  selections,
+  candidates,
+  onEdit,
+  onConfirm,
+}: {
+  color: string;
+  glow: string;
+  selections: Partial<Record<Role, string>>;
+  candidates: Candidate[];
+  onEdit: () => void;
+  onConfirm: () => void;
+}) {
+  const rows = ROLES_ORDER.map(({ role, Icon }) => {
+    const id = selections[role];
+    const cand = id ? candidates.find((c) => c.id === id) : undefined;
+    const accent = role === "spl" ? "#fbbf24" : role === "aspl" ? "#a78bfa" : color;
+    const accentGlow = role === "spl" ? "rgba(251,191,36,0.5)" : role === "aspl" ? "rgba(167,139,250,0.5)" : glow;
+    return { role, Icon, cand, accent, accentGlow };
+  }).filter((r) => r.cand);
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{
+        background: "rgba(5,4,21,0.55)",
+        backdropFilter: "blur(28px) saturate(150%)",
+        animation: "fade-up 0.4s ease-out both",
+      }}
+    >
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div
+          className="absolute inset-0 animate-breathe"
+          style={{
+            background: `radial-gradient(ellipse at center, ${color}33 0%, transparent 60%), radial-gradient(ellipse at 20% 20%, rgba(253,224,71,0.22), transparent 55%), radial-gradient(ellipse at 80% 80%, ${color}22, transparent 55%)`,
+          }}
+        />
+        <Particles count={28} color={color} />
+      </div>
+
+      <div className="relative animate-popup-in w-full max-w-xl">
+        <div
+          className="glass-strong rounded-[2.5rem] p-7 md:p-9 relative overflow-hidden animate-float-y"
+          style={{
+            boxShadow: `0 30px 100px ${glow}, 0 0 80px rgba(253,224,71,0.2), inset 0 1px 0 rgba(255,255,255,0.28)`,
+            background: `linear-gradient(135deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.04) 50%, ${color}12 100%)`,
+            border: "1px solid rgba(255,255,255,0.18)",
+          }}
+        >
+          <div
+            className="absolute -inset-10 rounded-[3.5rem] blur-3xl opacity-40 -z-10"
+            style={{ background: `radial-gradient(circle, ${color}, transparent 70%)` }}
+          />
+          <div className="absolute inset-x-8 top-0 h-px" style={{ background: "linear-gradient(to right, transparent, rgba(255,255,255,0.55), transparent)" }} />
+
+          {/* Shimmer sweep */}
+          <div className="absolute inset-0 rounded-[2.5rem] overflow-hidden pointer-events-none">
+            <div
+              className="absolute inset-y-0 w-1/3"
+              style={{
+                background: "linear-gradient(110deg, transparent, rgba(255,255,255,0.12), transparent)",
+                animation: "shine-sweep 4s ease-in-out infinite",
+              }}
+            />
+          </div>
+
+          <div className="text-center mb-6 relative">
+            <p className="text-[10px] uppercase tracking-[0.4em]" style={{ color }}>Confirm Ballot</p>
+            <h2 className="text-3xl md:text-4xl font-extrabold mt-2 text-shine tracking-tight">Review Your Vote</h2>
+            <p className="text-white/65 text-sm mt-2">Please confirm your selections before submitting.</p>
+          </div>
+
+          <div className="space-y-3 max-h-[55vh] overflow-y-auto pr-1 relative">
+            {rows.map(({ role, Icon, cand, accent, accentGlow }) => (
+              <div
+                key={role}
+                className="glass rounded-2xl p-3.5 flex items-center gap-4 transition-all"
+                style={{
+                  border: `1px solid ${accent}44`,
+                  boxShadow: `0 8px 24px -10px ${accentGlow}, inset 0 1px 0 rgba(255,255,255,0.12)`,
+                  background: `linear-gradient(135deg, ${accent}14, rgba(255,255,255,0.03))`,
+                }}
+              >
+                <div
+                  className="w-14 h-14 rounded-full overflow-hidden flex items-center justify-center font-bold text-lg shrink-0"
+                  style={{
+                    background: `linear-gradient(135deg, ${accent}40, ${accent}10)`,
+                    color: accent,
+                    boxShadow: `0 0 22px ${accentGlow}, inset 0 1px 0 rgba(255,255,255,0.25)`,
+                  }}
+                >
+                  {cand!.photo ? (
+                    <img src={cand!.photo} alt={cand!.name} className="w-full h-full object-cover" />
+                  ) : (
+                    cand!.name.slice(0, 1).toUpperCase()
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <Icon className="w-3.5 h-3.5" style={{ color: accent, filter: `drop-shadow(0 0 6px ${accentGlow})` }} />
+                    <span className="text-[10px] uppercase tracking-[0.3em]" style={{ color: accent }}>
+                      {ROLE_LABEL[role]}
+                    </span>
+                  </div>
+                  <p className="text-white font-semibold text-base truncate mt-0.5">{cand!.name}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3 mt-7">
+            <PremiumButton
+              onClick={onEdit}
+              className="flex-1 glass rounded-full px-6 py-3 font-semibold text-white/90 text-sm transition-all duration-300 hover:scale-[1.03]"
+              style={{
+                background: "linear-gradient(135deg, rgba(255,255,255,0.18), rgba(255,255,255,0.04))",
+                border: "1px solid rgba(255,255,255,0.25)",
+                boxShadow: "0 10px 30px -10px rgba(255,255,255,0.18), inset 0 1px 0 rgba(255,255,255,0.25)",
+              }}
+            >
+              Edit Vote
+            </PremiumButton>
+            <PremiumButton
+              onClick={onConfirm}
+              className="flex-1 glass-strong rounded-full px-6 py-3 font-bold text-white text-sm transition-all duration-300 hover:scale-[1.05] animate-pulse-glow flex items-center justify-center gap-2"
+              style={{
+                ["--glow-color" as any]: "rgba(251,191,36,0.55)",
+                background: "linear-gradient(135deg, #fbbf24, #f59e0b 60%, #fde68a)",
+                border: "1px solid rgba(253,224,71,0.6)",
+                boxShadow: "0 0 50px rgba(251,191,36,0.55), inset 0 1px 0 rgba(255,255,255,0.45)",
+                color: "#1a1206",
+              }}
+            >
+              <Sparkles className="w-4 h-4" /> Confirm Vote
+            </PremiumButton>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -403,11 +564,19 @@ function SuccessOverlay({ color, glow, onDone }: { color: string; glow: string; 
           <p className="text-2xl font-bold text-shine mb-3">Successfully</p>
           <p className="text-white/70 mb-8 text-base">Thank you for participating</p>
 
-          {/* Countdown */}
-          <p className="text-[10px] uppercase tracking-[0.35em] text-white/50 mb-4">Preparing for next student</p>
-          <CountdownRing seconds={5} color={color} onDone={onDone} />
+          {/* Auto-dismiss after ~2s */}
+          <AutoDismiss ms={2000} onDone={onDone} />
+          <p className="text-[10px] uppercase tracking-[0.35em] text-white/50 mt-2">Preparing for next student</p>
         </div>
       </div>
     </div>
   );
+}
+
+function AutoDismiss({ ms, onDone }: { ms: number; onDone: () => void }) {
+  useEffect(() => {
+    const t = setTimeout(onDone, ms);
+    return () => clearTimeout(t);
+  }, [ms, onDone]);
+  return null;
 }
