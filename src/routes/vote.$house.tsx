@@ -101,6 +101,7 @@ function VotePage() {
   }
 
   function handleCountdownDone() {
+    window.scrollTo({ top: 0, behavior: "smooth" });
     const lock = store.getLock();
     if (lock) {
       setSubmitted(false);
