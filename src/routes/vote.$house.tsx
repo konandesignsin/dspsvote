@@ -327,7 +327,7 @@ function VotePage() {
       )}
 
       {/* Success overlay */}
-      {submitted && <SuccessOverlay color={houseColor} glow={houseGlow} onDone={handleCountdownDone} />}
+      {submitted && <SuccessOverlay color={houseColor} glow={houseGlow} onDone={handleCountdownDone} schoolLogo={schoolLogo} />}
     </div>
   );
 }
@@ -476,7 +476,7 @@ function ReviewOverlay({
   );
 }
 
-function SuccessOverlay({ color, glow, onDone }: { color: string; glow: string; onDone: () => void }) {
+function SuccessOverlay({ color, glow, onDone, schoolLogo }: { color: string; glow: string; onDone: () => void; schoolLogo: string | null }) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center"
