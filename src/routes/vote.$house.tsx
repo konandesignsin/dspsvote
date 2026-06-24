@@ -564,11 +564,19 @@ function SuccessOverlay({ color, glow, onDone }: { color: string; glow: string; 
           <p className="text-2xl font-bold text-shine mb-3">Successfully</p>
           <p className="text-white/70 mb-8 text-base">Thank you for participating</p>
 
-          {/* Countdown */}
-          <p className="text-[10px] uppercase tracking-[0.35em] text-white/50 mb-4">Preparing for next student</p>
-          <CountdownRing seconds={5} color={color} onDone={onDone} />
+          {/* Auto-dismiss after ~2s */}
+          <AutoDismiss ms={2000} onDone={onDone} />
+          <p className="text-[10px] uppercase tracking-[0.35em] text-white/50 mt-2">Preparing for next student</p>
         </div>
       </div>
     </div>
   );
+}
+
+function AutoDismiss({ ms, onDone }: { ms: number; onDone: () => void }) {
+  useEffect(() => {
+    const t = setTimeout(onDone, ms);
+    return () => clearTimeout(t);
+  }, [ms, onDone]);
+  return null;
 }
