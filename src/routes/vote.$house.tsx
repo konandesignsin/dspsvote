@@ -8,6 +8,7 @@ import { LightRays, StarField } from "@/components/LightRays";
 import { PremiumButton } from "@/components/PremiumButton";
 import { CountdownRing } from "@/components/CountdownRing";
 import { SchoolLogoMark } from "@/components/SchoolBrand";
+import { SCHOOL_NAME } from "@/lib/election";
 import {
   HOUSES,
   ROLE_LABEL,
@@ -327,7 +328,7 @@ function VotePage() {
       )}
 
       {/* Success overlay */}
-      {submitted && <SuccessOverlay color={houseColor} glow={houseGlow} onDone={handleCountdownDone} schoolLogo={schoolLogo} />}
+      {submitted && <SuccessOverlay color={houseColor} glow={houseGlow} onDone={handleCountdownDone} />}
     </div>
   );
 }
