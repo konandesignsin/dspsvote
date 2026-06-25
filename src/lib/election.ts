@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export type House = "minotaur" | "kraken" | "thunderbird" | "dragon";
 export type Role = "spl" | "aspl" | "captain" | "vice-captain";
@@ -38,6 +39,7 @@ const VOTES_KEY = "election.votes";
 const LOCK_KEY = "election.deviceLock"; // local-only house lock
 const HOUSE_SYMBOLS_KEY = "election.houseSymbols";
 const SCHOOL_LOGO_KEY = "election.schoolLogo";
+const SCHOOL_LOGO_SETTING_KEY = "school_logo";
 
 export const SCHOOL_NAME = "DAWN SHIKSHALAYA PUBLIC SCHOOL";
 export const SCHOOL_SUBTITLE = "HOUSE ELECTION 2026";
@@ -89,7 +91,43 @@ export const store = {
     write(HOUSE_SYMBOLS_KEY, cur);
   },
   getSchoolLogo: (): string | null => read<string | null>(SCHOOL_LOGO_KEY, null),
-  setSchoolLogo: (dataUrl: string | null) => write(SCHOOL_LOGO_KEY, dataUrl),
+  setSchoolLogo: (dataUrl: string | null) => {
+    // Optimistic local cache so UI updates instantly on the uploading device.
+    write(SCHOOL_LOGO_KEY, dataUrl);
+    // Persist globally so every device sees the same logo.
+    void (async () => {
+      try {
+        if (dataUrl === null) {
+          await supabase.from("app_settings").delete().eq("key", SCHOOL_LOGO_SETTING_KEY);
+        } else {
+          await supabase
+            .from("app_settings")
+            .upsert({ key: SCHOOL_LOGO_SETTING_KEY, value: dataUrl, updated_at: new Date().toISOString() });
+        }
+      } catch (e) {
+        console.error("Failed to sync school logo to cloud", e);
+      }
+    })();
+  },
+  /**
+   * Pull the school logo from the shared backend and refresh the local cache.
+   * Called on app mount + on realtime change so every device stays in sync.
+   */
+  refreshSchoolLogo: async (): Promise<void> => {
+    try {
+      const { data, error } = await supabase
+        .from("app_settings")
+        .select("value")
+        .eq("key", SCHOOL_LOGO_SETTING_KEY)
+        .maybeSingle();
+      if (error) throw error;
+      const remote = (data?.value as string | undefined) ?? null;
+      const local = read<string | null>(SCHOOL_LOGO_KEY, null);
+      if (remote !== local) write(SCHOOL_LOGO_KEY, remote);
+    } catch (e) {
+      console.error("Failed to load school logo from cloud", e);
+    }
+  },
 };
 
 export function useStore<T>(selector: () => T): T {

@@ -11,6 +11,8 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { store } from "@/lib/election";
+import { supabase } from "@/integrations/supabase/client";
 
 function NotFoundComponent() {
   return (
@@ -125,6 +127,24 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
+  // Keep the school logo synced from the shared backend on every device.
+  useEffect(() => {
+    void store.refreshSchoolLogo();
+    const channel = supabase
+      .channel("app_settings_changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "app_settings" },
+        () => {
+          void store.refreshSchoolLogo();
+        },
+      )
+      .subscribe();
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

@@ -8,6 +8,7 @@ import { LightRays, StarField } from "@/components/LightRays";
 import { PremiumButton } from "@/components/PremiumButton";
 import { CountdownRing } from "@/components/CountdownRing";
 import { SchoolLogoMark } from "@/components/SchoolBrand";
+import { SCHOOL_NAME } from "@/lib/election";
 import {
   HOUSES,
   ROLE_LABEL,
@@ -218,7 +219,7 @@ function VotePage() {
                           as="button"
                           onClick={() => select(role, c.id)}
                           intensity={12}
-                          className={`group glass rounded-3xl p-6 text-center aspect-square flex flex-col items-center justify-center ${
+                          className={`group glass rounded-3xl p-5 pt-7 text-center flex flex-col items-center justify-start transition-all duration-500 hover:-translate-y-1 ${
                             selected ? "scale-[1.05] animate-pulse-glow" : ""
                           } ${dim ? "opacity-40 saturate-50" : ""}`}
                           style={{
@@ -242,49 +243,59 @@ function VotePage() {
                           )}
                           {/* Circular profile — hero of the card */}
                           <div
-                            className={`relative rounded-full overflow-hidden flex items-center justify-center font-bold mb-3 ring-2 transition-all duration-500 ${
-                              selected ? "w-36 h-36 sm:w-40 sm:h-40 text-5xl" : "w-32 h-32 sm:w-36 sm:h-36 text-4xl group-hover:scale-105"
+                            className={`relative rounded-full overflow-hidden flex items-center justify-center font-bold mb-4 ring-2 transition-all duration-500 ${
+                              selected
+                                ? "w-52 h-52 sm:w-56 sm:h-56 text-7xl animate-pulse-glow"
+                                : "w-48 h-48 sm:w-52 sm:h-52 text-6xl group-hover:scale-[1.06]"
                             }`}
                             style={{
                               background: `linear-gradient(135deg, ${accent}40, ${accent}10)`,
                               color: accent,
                               boxShadow: selected
-                                ? `0 0 55px ${glow}, 0 12px 35px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.3)`
-                                : `0 0 32px ${glow}, 0 10px 28px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.18)`,
+                                ? `0 0 75px ${glow}, 0 18px 45px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.35)`
+                                : `0 0 42px ${glow}, 0 14px 34px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.2)`,
                               ["--tw-ring-color" as any]: `${accent}99`,
                             }}
                           >
                             {c.photo ? (
-                              <img src={c.photo} alt={c.name} className="w-full h-full object-cover" />
+                              <img src={c.photo} alt={c.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                             ) : (
                               c.name.slice(0, 1).toUpperCase()
                             )}
                             {/* soft inner glow ring */}
-                            <span className="pointer-events-none absolute inset-0 rounded-full" style={{ boxShadow: `inset 0 0 22px ${accent}55` }} />
+                            <span className="pointer-events-none absolute inset-0 rounded-full" style={{ boxShadow: `inset 0 0 28px ${accent}66` }} />
                           </div>
-                          {/* Circular symbol badge */}
+                          {/* Circular symbol badge — official election emblem */}
                           {c.symbol && (
                             <div
-                              className={`relative w-14 h-14 mb-3 rounded-full overflow-hidden flex items-center justify-center transition-all duration-500 ${
-                                selected ? "animate-breathe" : ""
+                              className={`relative w-20 h-20 mb-4 rounded-full overflow-hidden flex items-center justify-center transition-all duration-500 group-hover:scale-110 ${
+                                selected ? "ring-2 animate-breathe" : ""
                               }`}
                               style={{
-                                background: "linear-gradient(135deg, rgba(255,255,255,0.14), rgba(255,255,255,0.04))",
+                                background:
+                                  "linear-gradient(135deg, rgba(255,255,255,0.18), rgba(255,255,255,0.04))",
                                 backdropFilter: "blur(14px) saturate(160%)",
-                                border: `1px solid ${accent}66`,
-                                boxShadow: `0 0 18px ${glow}, 0 6px 14px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.25)`,
+                                border: `1px solid ${accent}88`,
+                                boxShadow: selected
+                                  ? `0 0 32px ${glow}, 0 8px 20px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.35)`
+                                  : `0 0 22px ${glow}, 0 6px 16px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.3)`,
+                                ["--tw-ring-color" as any]: `${accent}`,
                               }}
                             >
                               {c.symbol.startsWith("data:") || c.symbol.startsWith("http") ? (
                                 <img src={c.symbol} alt="" className="w-full h-full object-cover" />
                               ) : (
-                                <span className="text-2xl leading-none">{c.symbol}</span>
+                                <span className="text-3xl leading-none">{c.symbol}</span>
                               )}
+                              <span
+                                className="pointer-events-none absolute inset-0 rounded-full"
+                                style={{ boxShadow: `inset 0 0 18px ${accent}55` }}
+                              />
                             </div>
                           )}
                           {/* Name */}
-                          <p className="text-white font-semibold text-base truncate w-full px-2">{c.name}</p>
-                          <p className="text-[10px] text-white/40 uppercase tracking-widest mt-1 truncate w-full">
+                          <p className="text-white font-semibold text-lg truncate w-full px-2">{c.name}</p>
+                          <p className="text-[10px] text-white/45 uppercase tracking-widest mt-1 truncate w-full">
                             {c.house ? HOUSES.find((h) => h.id === c.house)!.name : "Common"}
                           </p>
                         </TiltGlass>
@@ -327,7 +338,7 @@ function VotePage() {
       )}
 
       {/* Success overlay */}
-      {submitted && <SuccessOverlay color={houseColor} glow={houseGlow} onDone={handleCountdownDone} schoolLogo={schoolLogo} />}
+      {submitted && <SuccessOverlay color={houseColor} glow={houseGlow} onDone={handleCountdownDone} />}
     </div>
   );
 }
@@ -476,7 +487,7 @@ function ReviewOverlay({
   );
 }
 
-function SuccessOverlay({ color, glow, onDone, schoolLogo }: { color: string; glow: string; onDone: () => void; schoolLogo: string | null }) {
+function SuccessOverlay({ color, glow, onDone }: { color: string; glow: string; onDone: () => void }) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center"
@@ -552,8 +563,31 @@ function SuccessOverlay({ color, glow, onDone, schoolLogo }: { color: string; gl
             />
           </div>
 
-          <div className="flex justify-center mb-4">
-            <SchoolLogoMark url={schoolLogo} size={64} />
+          {/* School identity header */}
+          <div className="mb-5 relative">
+            <p className="text-[10px] uppercase tracking-[0.45em] text-white/55 mb-2">Official Election</p>
+            <h1
+              className="font-extrabold tracking-[0.04em] leading-[1.05] text-2xl sm:text-3xl md:text-4xl"
+              style={{
+                backgroundImage:
+                  "linear-gradient(135deg, #ffffff 0%, #fde68a 45%, #ffffff 100%)",
+                WebkitBackgroundClip: "text",
+                backgroundClip: "text",
+                color: "transparent",
+                textShadow: "0 0 24px rgba(253,224,71,0.55), 0 0 50px rgba(255,255,255,0.25)",
+                filter: "drop-shadow(0 4px 18px rgba(253,224,71,0.35))",
+              }}
+            >
+              {SCHOOL_NAME}
+            </h1>
+            <div
+              className="mx-auto mt-3 h-[2px] w-40 rounded-full"
+              style={{
+                background:
+                  "linear-gradient(to right, transparent, rgba(253,224,71,0.85), transparent)",
+                boxShadow: "0 0 14px rgba(253,224,71,0.6)",
+              }}
+            />
           </div>
 
           <div

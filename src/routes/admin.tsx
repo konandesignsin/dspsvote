@@ -130,8 +130,9 @@ function BrandingTab() {
       <div className="glass rounded-3xl p-6 mb-6">
         <h3 className="text-white font-semibold text-lg mb-1">School Branding</h3>
         <p className="text-white/50 text-sm">
-          Upload the official school logo. It will appear on the home page,
-          voting headers, success popups, and results.
+          Upload the official school logo. It is saved to the shared cloud and
+          appears automatically on every device — home page, voting headers,
+          and results.
         </p>
       </div>
       <div
@@ -163,7 +164,7 @@ function BrandingTab() {
             />
             <p className="text-xs text-white/40 leading-relaxed">
               Use a square PNG with a transparent background for best results.
-              Stored locally on this device.
+              Synced globally — every device updates automatically.
             </p>
           </div>
         </div>
