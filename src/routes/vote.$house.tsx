@@ -477,7 +477,7 @@ function ReviewOverlay({
   );
 }
 
-function SuccessOverlay({ color, glow, onDone, schoolLogo }: { color: string; glow: string; onDone: () => void; schoolLogo: string | null }) {
+function SuccessOverlay({ color, glow, onDone }: { color: string; glow: string; onDone: () => void }) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center"
@@ -553,8 +553,31 @@ function SuccessOverlay({ color, glow, onDone, schoolLogo }: { color: string; gl
             />
           </div>
 
-          <div className="flex justify-center mb-4">
-            <SchoolLogoMark url={schoolLogo} size={64} />
+          {/* School identity header */}
+          <div className="mb-5 relative">
+            <p className="text-[10px] uppercase tracking-[0.45em] text-white/55 mb-2">Official Election</p>
+            <h1
+              className="font-extrabold tracking-[0.04em] leading-[1.05] text-2xl sm:text-3xl md:text-4xl"
+              style={{
+                backgroundImage:
+                  "linear-gradient(135deg, #ffffff 0%, #fde68a 45%, #ffffff 100%)",
+                WebkitBackgroundClip: "text",
+                backgroundClip: "text",
+                color: "transparent",
+                textShadow: "0 0 24px rgba(253,224,71,0.55), 0 0 50px rgba(255,255,255,0.25)",
+                filter: "drop-shadow(0 4px 18px rgba(253,224,71,0.35))",
+              }}
+            >
+              {SCHOOL_NAME}
+            </h1>
+            <div
+              className="mx-auto mt-3 h-[2px] w-40 rounded-full"
+              style={{
+                background:
+                  "linear-gradient(to right, transparent, rgba(253,224,71,0.85), transparent)",
+                boxShadow: "0 0 14px rgba(253,224,71,0.6)",
+              }}
+            />
           </div>
 
           <div
