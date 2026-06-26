@@ -155,7 +155,7 @@
 }
 
 body {
-  background-color: #050415 !important;
+  background-color: #0D0A1E !important;
   color: #f5f5fa !important;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   overflow-x: hidden;
@@ -186,9 +186,9 @@ body {
 .aurora-bg {
   position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
   background:
-    radial-gradient(ellipse at top, #1a1235 0%, transparent 50%),
-    radial-gradient(ellipse at bottom, #0a1530 0%, transparent 50%),
-    #050415;
+    radial-gradient(ellipse at top, #1f1647 0%, transparent 50%),
+    radial-gradient(ellipse at bottom, #130D2E 0%, transparent 50%),
+    #0D0A1E;
 }
 
 .aurora-blob {
