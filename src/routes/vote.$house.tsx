@@ -128,102 +128,21 @@ function VotePage() {
       />
 
       <div className="relative z-10 max-w-6xl mx-auto px-6 py-8">
-        {/* Prestigious institutional header */}
-        <header className="relative mb-12 animate-fade-up">
-          <div className="absolute top-0 left-0 z-10">
-            <Link to="/" className="glass rounded-full px-4 py-2 text-xs text-white/70 hover:text-white flex items-center gap-2 transition hover:scale-105">
-              <Home className="w-3.5 h-3.5" /> Home
-            </Link>
-          </div>
-
-          <div className="flex flex-col items-center gap-5 pt-2">
-            {/* Logo with premium glass ring + gold glow */}
-            <div className="relative">
-              <div
-                className="absolute -inset-6 rounded-full blur-3xl opacity-70 -z-10 animate-pulse-glow"
-                style={{
-                  background:
-                    "radial-gradient(circle, rgba(253,224,71,0.55), transparent 70%)",
-                  ["--glow-color" as any]: "rgba(253,224,71,0.6)",
-                }}
-              />
-              <div
-                className="rounded-full p-[3px] animate-breathe"
-                style={{
-                  background:
-                    "conic-gradient(from 0deg, #fde68a, #f59e0b, #fbbf24, #ffffff, #fde68a)",
-                  boxShadow:
-                    "0 0 50px rgba(253,224,71,0.5), 0 18px 50px rgba(0,0,0,0.55)",
-                }}
-              >
-                <div
-                  className="rounded-full p-[2px]"
-                  style={{
-                    background:
-                      "linear-gradient(135deg, rgba(13,10,30,0.95), rgba(19,13,46,0.95))",
-                  }}
-                >
-                  <SchoolLogoMark url={schoolLogo} size={112} />
-                </div>
-              </div>
-            </div>
-
-            {/* School name */}
-            <div className="relative px-6 py-3 md:px-10 md:py-4 glass-strong rounded-2xl overflow-hidden">
-              <div
-                className="absolute inset-0 overflow-hidden pointer-events-none"
-              >
-                <div
-                  className="absolute inset-y-0 w-1/3"
-                  style={{
-                    background:
-                      "linear-gradient(110deg, transparent, rgba(255,255,255,0.18), transparent)",
-                    animation: "shine-sweep 5s ease-in-out infinite",
-                  }}
-                />
-              </div>
-              <h1
-                className="relative text-shine font-extrabold text-center leading-[1.05] tracking-[0.14em] text-2xl sm:text-3xl md:text-5xl"
-                style={{
-                  textShadow:
-                    "0 0 24px rgba(253,224,71,0.45), 0 0 60px rgba(255,255,255,0.2)",
-                }}
-              >
-                {SCHOOL_NAME}
+        {/* Header */}
+        <header className="flex items-center justify-between mb-10 animate-fade-up gap-3">
+          <Link to="/" className="glass rounded-full px-4 py-2 text-xs text-white/70 hover:text-white flex items-center gap-2 transition hover:scale-105">
+            <Home className="w-3.5 h-3.5" /> Home
+          </Link>
+          <div className="flex items-center gap-4">
+            <SchoolLogoMark url={schoolLogo} size={56} />
+            <div className="text-center">
+              <p className="text-[10px] uppercase tracking-[0.35em] text-white/40">Voting as</p>
+              <h1 className="text-2xl md:text-3xl font-bold" style={{ color: houseColor }}>
+                {houseInfo.name} House
               </h1>
             </div>
-
-            {/* Election pill */}
-            <div className="relative glass rounded-full px-5 py-1.5">
-              <p className="text-[11px] md:text-xs font-semibold tracking-[0.4em] text-white/85">
-                HOUSE ELECTION 2026
-              </p>
-              <div
-                className="absolute left-5 right-5 -bottom-0.5 h-[2px] rounded-full"
-                style={{
-                  background:
-                    "linear-gradient(90deg, #fbbf24, #3b82f6, #22c55e, #f97316)",
-                  boxShadow: "0 0 12px rgba(253,224,71,0.6)",
-                }}
-              />
-            </div>
-
-            {/* Secondary: house identity */}
-            <div className="text-center mt-2">
-              <p className="text-[10px] uppercase tracking-[0.45em] text-white/40">
-                Voting as
-              </p>
-              <h2
-                className="text-lg md:text-xl font-semibold tracking-wide mt-1"
-                style={{
-                  color: houseColor,
-                  textShadow: `0 0 16px ${houseGlow}`,
-                }}
-              >
-                {houseInfo.name} House
-              </h2>
-            </div>
           </div>
+          <div className="w-20" />
         </header>
 
         {/* Sections */}
