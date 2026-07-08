@@ -35,7 +35,7 @@ export function CountdownRing({ seconds, color = "#fde68a", onDone }: { seconds:
           style={{ filter: `drop-shadow(0 0 8px ${color})`, transition: "stroke-dashoffset 0.05s linear" }}
         />
       </svg>
-      <div className="absolute inset-0 flex items-center justify-center text-3xl font-bold text-white tabular-nums">
+      <div className="absolute inset-0 flex items-center justify-center text-3xl font-bold text-ink tabular-nums">
         {Math.ceil(remaining)}
       </div>
     </div>

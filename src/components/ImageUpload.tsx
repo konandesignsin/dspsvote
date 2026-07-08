@@ -66,7 +66,7 @@ export function ImageUpload({
         {value ? (
           <img src={value} alt="" className="w-full h-full object-cover" />
         ) : (
-          <Upload className="w-6 h-6 text-white/40" />
+          <Upload className="w-6 h-6 text-ink/40" />
         )}
       </div>
       <div className="flex flex-col gap-2">
@@ -74,7 +74,7 @@ export function ImageUpload({
           type="button"
           onClick={() => ref.current?.click()}
           disabled={loading}
-          className="glass rounded-full px-4 py-2 text-xs text-white hover:scale-105 transition flex items-center gap-2 disabled:opacity-50"
+          className="glass rounded-full px-4 py-2 text-xs text-ink hover:scale-105 transition flex items-center gap-2 disabled:opacity-50"
         >
           <Upload className="w-3.5 h-3.5" /> {loading ? "Processing..." : value ? "Replace" : label}
         </button>
@@ -82,7 +82,7 @@ export function ImageUpload({
           <button
             type="button"
             onClick={() => onChange(null)}
-            className="text-xs text-white/50 hover:text-red-300 flex items-center gap-1"
+            className="text-xs text-ink/50 hover:text-red-300 flex items-center gap-1"
           >
             <X className="w-3 h-3" /> Remove
           </button>

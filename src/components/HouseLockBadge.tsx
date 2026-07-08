@@ -31,24 +31,24 @@ export function HouseLockBadge() {
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/70 backdrop-blur-xl" onClick={() => setOpen(false)}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/70 backdrop-blur-xl" onClick={() => setOpen(false)}>
           <div className="glass-strong rounded-3xl p-8 max-w-sm w-full text-center" onClick={(e) => e.stopPropagation()}>
             <div className="w-14 h-14 mx-auto mb-4 rounded-2xl glass flex items-center justify-center">
               <Unlock className="w-6 h-6" style={{ color: info.color }} />
             </div>
-            <h3 className="text-2xl font-bold text-white mb-2">Unlock this device?</h3>
-            <p className="text-white/60 text-sm mb-6">
+            <h3 className="text-2xl font-bold text-ink mb-2">Unlock this device?</h3>
+            <p className="text-ink/60 text-sm mb-6">
               The lock to <span className="font-semibold" style={{ color: info.color }}>{info.name}</span> will be removed and students can pick any house here.
             </p>
             <div className="flex flex-col gap-3">
               <button
                 onClick={() => { store.setLock(null); setOpen(false); navigate({ to: "/" }); }}
-                className="btn-premium glass rounded-2xl py-3 px-5 font-medium text-white"
+                className="btn-premium glass rounded-2xl py-3 px-5 font-medium text-ink"
                 style={{ boxShadow: `0 0 30px ${info.glow}` }}
               >
                 Unlock Device
               </button>
-              <button onClick={() => setOpen(false)} className="text-xs text-white/40 hover:text-white/60">Cancel</button>
+              <button onClick={() => setOpen(false)} className="text-xs text-ink/40 hover:text-ink/60">Cancel</button>
             </div>
           </div>
         </div>
