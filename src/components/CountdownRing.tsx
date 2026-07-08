@@ -23,7 +23,7 @@ export function CountdownRing({ seconds, color = "#fde68a", onDone }: { seconds:
   return (
     <div className="relative w-24 h-24 mx-auto">
       <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-        <circle cx="50" cy="50" r="45" stroke="rgba(255,255,255,0.1)" strokeWidth="4" fill="none" />
+        <circle cx="50" cy="50" r="45" stroke="rgba(15,23,42,0.12)" strokeWidth="4" fill="none" />
         <circle
           cx="50" cy="50" r="45"
           stroke={color}
