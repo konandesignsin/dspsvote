@@ -184,7 +184,7 @@ function VotePage() {
                   <h2
                     className="text-3xl md:text-5xl font-extrabold tracking-tight animate-pulse-glow-text"
                     style={{
-                      backgroundImage: `linear-gradient(135deg, #ffffff 0%, ${accent} 60%, #ffffff 100%)`,
+                      backgroundImage: `linear-gradient(135deg, #0f172a 0%, ${accent} 60%, #0f172a 100%)`,
                       WebkitBackgroundClip: "text",
                       backgroundClip: "text",
                       color: "transparent",
@@ -573,7 +573,7 @@ function SuccessOverlay({ color, glow, onDone }: { color: string; glow: string; 
               className="font-extrabold tracking-[0.04em] leading-[1.05] text-2xl sm:text-3xl md:text-4xl"
               style={{
                 backgroundImage:
-                  "linear-gradient(135deg, #ffffff 0%, #fde68a 45%, #ffffff 100%)",
+                  "linear-gradient(135deg, #0f172a 0%, #b45309 45%, #0f172a 100%)",
                 WebkitBackgroundClip: "text",
                 backgroundClip: "text",
                 color: "transparent",
