@@ -295,7 +295,7 @@ function CandidateForm({ initial, onClose }: { initial: Candidate | null; onClos
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-md">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/25 backdrop-blur-md">
       <div className="glass-strong rounded-3xl p-8 max-w-md w-full relative">
         <button onClick={onClose} className="absolute top-4 right-4 text-ink/50 hover:text-ink"><X className="w-5 h-5" /></button>
         <h3 className="text-2xl font-bold text-ink mb-6">{initial ? "Edit" : "Add"} Candidate</h3>

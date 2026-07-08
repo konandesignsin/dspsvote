@@ -31,7 +31,7 @@ export function HouseLockBadge() {
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/70 backdrop-blur-xl" onClick={() => setOpen(false)}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/25 backdrop-blur-xl" onClick={() => setOpen(false)}>
           <div className="glass-strong rounded-3xl p-8 max-w-sm w-full text-center" onClick={(e) => e.stopPropagation()}>
             <div className="w-14 h-14 mx-auto mb-4 rounded-2xl glass flex items-center justify-center">
               <Unlock className="w-6 h-6" style={{ color: info.color }} />

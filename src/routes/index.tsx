@@ -173,7 +173,7 @@ function Index() {
 
       {/* Lock confirmation modal */}
       {pendingHouse && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-md animate-fade-up">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/25 backdrop-blur-md animate-fade-up">
           <div className="glass-strong rounded-3xl p-8 max-w-md w-full text-center relative overflow-hidden">
             <div
               className="absolute -top-20 -left-20 w-60 h-60 rounded-full blur-3xl opacity-40"

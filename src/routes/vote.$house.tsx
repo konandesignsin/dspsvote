@@ -373,7 +373,7 @@ function ReviewOverlay({
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
       style={{
-        background: "rgba(5,4,21,0.55)",
+        background: "rgba(248,249,250,0.55)",
         backdropFilter: "blur(28px) saturate(150%)",
         animation: "fade-up 0.4s ease-out both",
       }}
@@ -495,7 +495,7 @@ function SuccessOverlay({ color, glow, onDone }: { color: string; glow: string; 
     <div
       className="fixed inset-0 z-50 flex items-center justify-center"
       style={{
-        background: "rgba(5,4,21,0.6)",
+        background: "rgba(248,249,250,0.6)",
         backdropFilter: "blur(28px) saturate(150%)",
         animation: "fade-up 0.5s ease-out both",
       }}
