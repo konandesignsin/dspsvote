@@ -61,7 +61,7 @@ function VotePage() {
 
   if (!houseInfo) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-ink">
+      <div className="min-h-screen flex items-center justify-center text-white">
         Unknown house. <Link to="/" className="underline ml-2">Go home</Link>
       </div>
     );
@@ -130,13 +130,13 @@ function VotePage() {
       <div className="relative z-10 max-w-6xl mx-auto px-6 py-8">
         {/* Header */}
         <header className="flex items-center justify-between mb-10 animate-fade-up gap-3">
-          <Link to="/" className="glass rounded-full px-4 py-2 text-xs text-ink/70 hover:text-ink flex items-center gap-2 transition hover:scale-105">
+          <Link to="/" className="glass rounded-full px-4 py-2 text-xs text-white/70 hover:text-white flex items-center gap-2 transition hover:scale-105">
             <Home className="w-3.5 h-3.5" /> Home
           </Link>
           <div className="flex items-center gap-4">
             <SchoolLogoMark url={schoolLogo} size={56} />
             <div className="text-center">
-              <p className="text-[10px] uppercase tracking-[0.35em] text-ink/40">Voting as</p>
+              <p className="text-[10px] uppercase tracking-[0.35em] text-white/40">Voting as</p>
               <h1 className="text-2xl md:text-3xl font-bold" style={{ color: houseColor }}>
                 {houseInfo.name} House
               </h1>
@@ -184,7 +184,7 @@ function VotePage() {
                   <h2
                     className="text-3xl md:text-5xl font-extrabold tracking-tight animate-pulse-glow-text"
                     style={{
-                      backgroundImage: `linear-gradient(135deg, #0f172a 0%, ${accent} 60%, #0f172a 100%)`,
+                      backgroundImage: `linear-gradient(135deg, #ffffff 0%, ${accent} 60%, #ffffff 100%)`,
                       WebkitBackgroundClip: "text",
                       backgroundClip: "text",
                       color: "transparent",
@@ -205,7 +205,7 @@ function VotePage() {
                 </div>
 
                 {list.length === 0 ? (
-                  <div className="glass rounded-2xl p-8 text-center text-ink/40 text-sm relative">
+                  <div className="glass rounded-2xl p-8 text-center text-white/40 text-sm relative">
                     No candidates yet for {ROLE_LABEL[role]}{role === "captain" || role === "vice-captain" ? ` in ${houseInfo.name}` : ""}.
                   </div>
                 ) : (
@@ -294,8 +294,8 @@ function VotePage() {
                             </div>
                           )}
                           {/* Name */}
-                          <p className="text-ink font-semibold text-lg truncate w-full px-2 text-legible">{c.name}</p>
-                          <p className="text-[11px] text-ink/75 uppercase tracking-widest mt-1 truncate w-full">
+                          <p className="text-white font-semibold text-lg truncate w-full px-2 text-legible">{c.name}</p>
+                          <p className="text-[11px] text-white/75 uppercase tracking-widest mt-1 truncate w-full">
                             {c.house ? HOUSES.find((h) => h.id === c.house)!.name : "Common"}
                           </p>
                         </TiltGlass>
@@ -313,7 +313,7 @@ function VotePage() {
           <PremiumButton
             disabled={!allFilled || submitting}
             onClick={openReview}
-            className="glass-strong rounded-full px-10 py-4 font-semibold text-ink text-base disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 hover:scale-105 flex items-center gap-3"
+            className="glass-strong rounded-full px-10 py-4 font-semibold text-white text-base disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 hover:scale-105 flex items-center gap-3"
             style={allFilled ? {
               boxShadow: `0 0 60px ${houseGlow}, 0 12px 40px -8px ${houseGlow}, inset 0 1px 0 rgba(255,255,255,0.3)`,
               background: `linear-gradient(135deg, ${houseColor}, ${houseColor}bb)`,
@@ -373,7 +373,7 @@ function ReviewOverlay({
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
       style={{
-        background: "rgba(248,249,250,0.55)",
+        background: "rgba(5,4,21,0.55)",
         backdropFilter: "blur(28px) saturate(150%)",
         animation: "fade-up 0.4s ease-out both",
       }}
@@ -417,7 +417,7 @@ function ReviewOverlay({
           <div className="text-center mb-6 relative">
             <p className="text-[10px] uppercase tracking-[0.4em]" style={{ color }}>Confirm Ballot</p>
             <h2 className="text-3xl md:text-4xl font-extrabold mt-2 text-shine tracking-tight">Review Your Vote</h2>
-            <p className="text-ink/65 text-sm mt-2">Please confirm your selections before submitting.</p>
+            <p className="text-white/65 text-sm mt-2">Please confirm your selections before submitting.</p>
           </div>
 
           <div className="space-y-3 max-h-[55vh] overflow-y-auto pr-1 relative">
@@ -452,7 +452,7 @@ function ReviewOverlay({
                       {ROLE_LABEL[role]}
                     </span>
                   </div>
-                  <p className="text-ink font-semibold text-base truncate mt-0.5">{cand!.name}</p>
+                  <p className="text-white font-semibold text-base truncate mt-0.5">{cand!.name}</p>
                 </div>
               </div>
             ))}
@@ -461,7 +461,7 @@ function ReviewOverlay({
           <div className="flex flex-col sm:flex-row gap-3 mt-7">
             <PremiumButton
               onClick={onEdit}
-              className="flex-1 glass rounded-full px-6 py-3 font-semibold text-ink/90 text-sm transition-all duration-300 hover:scale-[1.03]"
+              className="flex-1 glass rounded-full px-6 py-3 font-semibold text-white/90 text-sm transition-all duration-300 hover:scale-[1.03]"
               style={{
                 background: "linear-gradient(135deg, rgba(255,255,255,0.18), rgba(255,255,255,0.04))",
                 border: "1px solid rgba(255,255,255,0.25)",
@@ -472,7 +472,7 @@ function ReviewOverlay({
             </PremiumButton>
             <PremiumButton
               onClick={onConfirm}
-              className="flex-1 glass-strong rounded-full px-6 py-3 font-bold text-ink text-sm transition-all duration-300 hover:scale-[1.05] animate-pulse-glow flex items-center justify-center gap-2"
+              className="flex-1 glass-strong rounded-full px-6 py-3 font-bold text-white text-sm transition-all duration-300 hover:scale-[1.05] animate-pulse-glow flex items-center justify-center gap-2"
               style={{
                 ["--glow-color" as any]: "rgba(251,191,36,0.55)",
                 background: "linear-gradient(135deg, #fbbf24, #f59e0b 60%, #fde68a)",
@@ -495,7 +495,7 @@ function SuccessOverlay({ color, glow, onDone }: { color: string; glow: string; 
     <div
       className="fixed inset-0 z-50 flex items-center justify-center"
       style={{
-        background: "rgba(248,249,250,0.6)",
+        background: "rgba(5,4,21,0.6)",
         backdropFilter: "blur(28px) saturate(150%)",
         animation: "fade-up 0.5s ease-out both",
       }}
@@ -568,12 +568,12 @@ function SuccessOverlay({ color, glow, onDone }: { color: string; glow: string; 
 
           {/* School identity header */}
           <div className="mb-5 relative">
-            <p className="text-[10px] uppercase tracking-[0.45em] text-ink/55 mb-2">Official Election</p>
+            <p className="text-[10px] uppercase tracking-[0.45em] text-white/55 mb-2">Official Election</p>
             <h1
               className="font-extrabold tracking-[0.04em] leading-[1.05] text-2xl sm:text-3xl md:text-4xl"
               style={{
                 backgroundImage:
-                  "linear-gradient(135deg, #0f172a 0%, #b45309 45%, #0f172a 100%)",
+                  "linear-gradient(135deg, #ffffff 0%, #fde68a 45%, #ffffff 100%)",
                 WebkitBackgroundClip: "text",
                 backgroundClip: "text",
                 color: "transparent",
@@ -610,7 +610,7 @@ function SuccessOverlay({ color, glow, onDone }: { color: string; glow: string; 
             Vote Submitted
           </h2>
           <p className="text-2xl font-bold text-shine mb-3">Successfully</p>
-          <p className="text-ink/70 mb-8 text-base">Thank you for participating</p>
+          <p className="text-white/70 mb-8 text-base">Thank you for participating</p>
 
           {/* 3-second countdown for next student */}
           <div
@@ -621,7 +621,7 @@ function SuccessOverlay({ color, glow, onDone }: { color: string; glow: string; 
               background: "linear-gradient(135deg, rgba(253,224,71,0.10), rgba(255,255,255,0.04))",
             }}
           >
-            <p className="text-[10px] uppercase tracking-[0.35em] text-ink/60 mb-3">Preparing for Next Student</p>
+            <p className="text-[10px] uppercase tracking-[0.35em] text-white/60 mb-3">Preparing for Next Student</p>
             <div className="flex items-center justify-center">
               <CountdownRing seconds={3} color="#fde68a" onDone={onDone} />
             </div>

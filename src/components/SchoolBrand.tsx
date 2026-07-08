@@ -89,7 +89,7 @@ export function SchoolBrand({
           style={{ animationDelay: "0.4s" }}
         >
           <p
-            className={`relative font-semibold tracking-[0.4em] text-ink/85 ${
+            className={`relative font-semibold tracking-[0.4em] text-white/85 ${
               size === "hero" ? "text-sm md:text-base" : "text-xs"
             }`}
           >
@@ -151,7 +151,7 @@ export function SchoolLogoMark({
         />
       ) : (
         <School
-          className="text-ink/80"
+          className="text-white/80"
           style={{ width: size * 0.45, height: size * 0.45 }}
         />
       )}

@@ -59,8 +59,6 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  --color-ink: var(--ink);
-  --color-paper: var(--paper);
 }
 
 :root {
@@ -154,65 +152,65 @@
   --house-dragon: oklch(0.78 0.18 50);
   --role-spl: oklch(0.85 0.15 85);
   --role-aspl: oklch(0.7 0.2 300);
-  --paper: #f8f9fa;
-  --ink: #0f172a;
 }
 
 body {
-  background-color: #f8f9fa !important;
-  color: #0f172a !important;
+  background-color: #050415 !important;
+  color: #f5f5fa !important;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   overflow-x: hidden;
 }
 
 .glass {
-  background: linear-gradient(135deg, rgba(255,255,255,0.75), rgba(255,255,255,0.55));
-  backdrop-filter: blur(20px) saturate(150%);
-  border: 1px solid rgba(15,23,42,0.08);
-  box-shadow: 0 10px 30px -12px rgba(15,23,42,0.18), inset 0 1px 0 rgba(255,255,255,0.8);
+  background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+  backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 10px 40px -10px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
 }
 
 /* Slightly denser glass for content cards so they lift off the aurora
    background instead of blending into it. Keeps the same visual language. */
 .glass-card {
-  background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.78));
-  backdrop-filter: blur(26px) saturate(160%);
-  border: 1px solid rgba(15,23,42,0.10);
-  box-shadow: 0 20px 60px -18px rgba(15,23,42,0.22), inset 0 1px 0 rgba(255,255,255,0.9);
+  background: linear-gradient(135deg, rgba(20,18,45,0.55), rgba(10,8,28,0.35));
+  backdrop-filter: blur(28px) saturate(170%);
+  border: 1px solid rgba(255,255,255,0.16);
+  box-shadow:
+    0 18px 55px -12px rgba(0,0,0,0.75),
+    0 2px 0 rgba(255,255,255,0.04) inset,
+    inset 0 1px 0 rgba(255,255,255,0.12);
 }
 
-/* Readability helper for body copy sitting over bright gradients / glows.
-   Light halo so dark ink stays crisp on colored washes. */
+/* Readability helper for body copy sitting over bright gradients / glows. */
 .text-legible {
-  text-shadow: 0 1px 2px rgba(255,255,255,0.7), 0 0 10px rgba(255,255,255,0.5);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.55), 0 0 12px rgba(0,0,0,0.35);
 }
 
 .glass-strong {
-  background: linear-gradient(135deg, rgba(255,255,255,0.92), rgba(255,255,255,0.72));
-  backdrop-filter: blur(36px) saturate(180%);
-  border: 1px solid rgba(15,23,42,0.10);
-  box-shadow: 0 24px 70px -20px rgba(15,23,42,0.28), inset 0 1px 0 rgba(255,255,255,0.9);
+  background: linear-gradient(135deg, rgba(255,255,255,0.14), rgba(255,255,255,0.04));
+  backdrop-filter: blur(40px) saturate(180%);
+  border: 1px solid rgba(255,255,255,0.18);
+  box-shadow: 0 20px 60px -10px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.15);
 }
 
 .glass-input {
-  background: rgba(255,255,255,0.85);
+  background: rgba(255,255,255,0.06);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(15,23,42,0.14);
-  color: #0f172a;
+  border: 1px solid rgba(255,255,255,0.15);
+  color: white;
 }
-.glass-input::placeholder { color: rgba(15,23,42,0.4); }
+.glass-input::placeholder { color: rgba(255,255,255,0.4); }
 
 .aurora-bg {
   position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
   background:
-    radial-gradient(ellipse at top, #fef3c7 0%, transparent 55%),
-    radial-gradient(ellipse at bottom, #dbeafe 0%, transparent 55%),
-    #f8f9fa;
+    radial-gradient(ellipse at top, #1a1235 0%, transparent 50%),
+    radial-gradient(ellipse at bottom, #0a1530 0%, transparent 50%),
+    #050415;
 }
 
 .aurora-blob {
   position: absolute; border-radius: 50%;
-  filter: blur(90px); opacity: 0.22;
+  filter: blur(80px); opacity: 0.5;
   animation: float-blob 55s ease-in-out infinite;
 }
 
@@ -414,7 +412,7 @@ body {
 
 /* Shining text */
 .text-shine {
-  background: linear-gradient(110deg, #1e293b 0%, #b45309 25%, #1e293b 50%, #b45309 75%, #1e293b 100%);
+  background: linear-gradient(110deg, #ffffff 0%, #fde68a 25%, #ffffff 50%, #fde68a 75%, #ffffff 100%);
   background-size: 200% auto;
   -webkit-background-clip: text; background-clip: text; color: transparent;
   animation: text-shine 3s linear infinite;
@@ -464,20 +462,20 @@ body {
 }
 
 .text-gradient-gold {
-  background: linear-gradient(135deg, #b45309, #d97706, #f59e0b);
+  background: linear-gradient(135deg, #fde68a, #f59e0b, #fbbf24);
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
 .text-gradient-luxury {
-  background: linear-gradient(135deg, #0f172a 0%, #6d28d9 50%, #1d4ed8 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #c4b5fd 50%, #93c5fd 100%);
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
 
 ::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: rgba(15,23,42,0.04); }
-::-webkit-scrollbar-thumb { background: rgba(15,23,42,0.18); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(15,23,42,0.35); }
+::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
 
-.house-card-minotaur:hover    { box-shadow: 0 22px 55px -18px rgba(217,119,6,0.45); }
-.house-card-kraken:hover      { box-shadow: 0 22px 55px -18px rgba(37,99,235,0.45); }
-.house-card-thunderbird:hover { box-shadow: 0 22px 55px -18px rgba(22,163,74,0.45); }
-.house-card-dragon:hover      { box-shadow: 0 22px 55px -18px rgba(234,88,12,0.45); }
+.house-card-minotaur:hover { box-shadow: 0 20px 60px -10px rgba(251,191,36,0.6); }
+.house-card-kraken:hover { box-shadow: 0 20px 60px -10px rgba(59,130,246,0.6); }
+.house-card-thunderbird:hover { box-shadow: 0 20px 60px -10px rgba(34,197,94,0.6); }
+.house-card-dragon:hover { box-shadow: 0 20px 60px -10px rgba(249,115,22,0.6); }

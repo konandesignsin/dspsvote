@@ -37,21 +37,21 @@ export function Particles({ count = 30, color = "white" }: { count?: number; col
           : layer === 3 ? 5 + ((i * 2) % 6)  // blurred sparkle
           : 1 + ((i * 2) % 3);               // star / dust
 
-        let bg = color === "white" ? "rgba(217,119,6,0.6)" : color;
+        let bg = color;
         let blur = 0;
         let opacity = 0.5;
         if (layer === 1) {
-          bg = `radial-gradient(circle, ${color === "white" ? "rgba(251,191,36,0.55)" : color} 0%, transparent 65%)`;
-          blur = 6; opacity = 0.4;
+          bg = `radial-gradient(circle, ${color === "white" ? "rgba(253,224,71,0.55)" : color} 0%, transparent 65%)`;
+          blur = 6; opacity = 0.35;
         } else if (layer === 2) {
-          bg = "radial-gradient(circle, #fbbf24, rgba(217,119,6,0.5) 55%, transparent 80%)";
+          bg = "radial-gradient(circle, #fde68a, rgba(251,191,36,0.4) 55%, transparent 80%)";
           blur = 1; opacity = 0.6;
         } else if (layer === 3) {
-          bg = `radial-gradient(circle, ${color === "white" ? "#f59e0b" : color}, transparent 70%)`;
+          bg = `radial-gradient(circle, ${color === "white" ? "#ffffff" : color}, transparent 70%)`;
           blur = 3; opacity = 0.5;
         } else {
-          bg = color === "white" ? "rgba(217,119,6,0.7)" : color;
-          opacity = 0.5;
+          bg = color === "white" ? "rgba(255,255,255,0.85)" : color;
+          opacity = 0.45;
         }
 
         return (

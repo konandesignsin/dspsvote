@@ -35,8 +35,8 @@ export function StarField({ count = 60 }: { count?: number }) {
               top: `${top}%`,
               width: size,
               height: size,
-              background: "#f59e0b",
-              boxShadow: "0 0 6px rgba(217,119,6,0.55)",
+              background: "white",
+              boxShadow: "0 0 6px rgba(255,255,255,0.9)",
               animationDelay: `${delay}s`,
               animationDuration: `${dur}s`,
             }}

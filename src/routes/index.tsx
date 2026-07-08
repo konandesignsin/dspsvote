@@ -69,11 +69,11 @@ function Index() {
         <header className="flex items-center justify-between mb-12 animate-fade-up">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl glass flex items-center justify-center">
-              <Sparkles className="w-5 h-5 text-ink/80" />
+              <Sparkles className="w-5 h-5 text-white/80" />
             </div>
             <div>
-              <h2 className="text-sm font-medium tracking-widest text-ink/60 uppercase">House Elections</h2>
-              <p className="text-xs text-ink/40">2026 · Pick your house</p>
+              <h2 className="text-sm font-medium tracking-widest text-white/60 uppercase">House Elections</h2>
+              <p className="text-xs text-white/40">2026 · Pick your house</p>
             </div>
           </div>
         </header>
@@ -85,7 +85,7 @@ function Index() {
         >
           <SchoolBrand size="hero" />
           <p
-            className="text-ink/55 text-center text-base md:text-lg mt-8 max-w-2xl mx-auto animate-fade-up"
+            className="text-white/55 text-center text-base md:text-lg mt-8 max-w-2xl mx-auto animate-fade-up"
             style={{ animationDelay: "0.55s" }}
           >
             Step into the arena. Choose your house and cast your vote for the
@@ -137,18 +137,18 @@ function Index() {
                     </span>
                   )}
                 </div>
-                <p className="text-xs uppercase tracking-widest text-ink/70 mb-2">House</p>
+                <p className="text-xs uppercase tracking-widest text-white/70 mb-2">House</p>
                 <h3
                   className="text-3xl font-bold mb-2 text-legible"
                   style={{ color: h.color, textShadow: `0 0 20px ${h.glow}, 0 1px 2px rgba(0,0,0,0.6)` }}
                 >
                   {h.name}
                 </h3>
-                <p className="text-ink/85 text-sm text-legible">
+                <p className="text-white/85 text-sm text-legible">
                   Enter and cast your vote for {h.name} leaders.
                 </p>
                 <div
-                  className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-ink rounded-full px-4 py-2 transition-all group-hover:scale-[1.03]"
+                  className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-white rounded-full px-4 py-2 transition-all group-hover:scale-[1.03]"
                   style={{
                     background: `linear-gradient(135deg, ${h.color}55, ${h.color}22)`,
                     border: `1px solid ${h.color}aa`,
@@ -165,7 +165,7 @@ function Index() {
 
         {/* Footer / admin link */}
         <footer className="mt-auto pt-16 flex justify-center">
-          <Link to="/admin" className="glass rounded-full px-5 py-2.5 text-xs text-ink/60 hover:text-ink flex items-center gap-2 hover:scale-105 transition">
+          <Link to="/admin" className="glass rounded-full px-5 py-2.5 text-xs text-white/60 hover:text-white flex items-center gap-2 hover:scale-105 transition">
             <Settings className="w-3.5 h-3.5" /> Admin Panel
           </Link>
         </footer>
@@ -173,7 +173,7 @@ function Index() {
 
       {/* Lock confirmation modal */}
       {pendingHouse && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/25 backdrop-blur-md animate-fade-up">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/60 backdrop-blur-md animate-fade-up">
           <div className="glass-strong rounded-3xl p-8 max-w-md w-full text-center relative overflow-hidden">
             <div
               className="absolute -top-20 -left-20 w-60 h-60 rounded-full blur-3xl opacity-40"
@@ -181,27 +181,27 @@ function Index() {
             />
             <div className="relative">
               <div className="w-14 h-14 mx-auto mb-4 rounded-2xl glass flex items-center justify-center">
-                <Lock className="w-6 h-6 text-ink/80" />
+                <Lock className="w-6 h-6 text-white/80" />
               </div>
-              <h3 className="text-2xl font-bold text-ink mb-2">Lock this device?</h3>
-              <p className="text-ink/60 text-sm mb-6">
+              <h3 className="text-2xl font-bold text-white mb-2">Lock this device?</h3>
+              <p className="text-white/60 text-sm mb-6">
                 Lock this computer to <span className="font-semibold" style={{ color: HOUSES.find((x) => x.id === pendingHouse)!.color }}>{HOUSES.find((x) => x.id === pendingHouse)!.name}</span> so the next students can vote here without re-selecting. (This setting is local to this device only.)
               </p>
               <div className="flex flex-col gap-3">
                 <PremiumButton
                   onClick={() => confirm(true)}
-                  className="glass rounded-2xl py-3 px-5 font-medium text-ink hover:scale-[1.02] transition flex items-center justify-center gap-2"
+                  className="glass rounded-2xl py-3 px-5 font-medium text-white hover:scale-[1.02] transition flex items-center justify-center gap-2"
                   style={{ boxShadow: `0 0 30px ${HOUSES.find((x) => x.id === pendingHouse)!.glow}` }}
                 >
                   <Lock className="w-4 h-4" /> Enable Lock
                 </PremiumButton>
                 <PremiumButton
                   onClick={() => confirm(false)}
-                  className="rounded-2xl py-3 px-5 text-ink/70 hover:text-ink transition"
+                  className="rounded-2xl py-3 px-5 text-white/70 hover:text-white transition"
                 >
                   Continue Without Lock
                 </PremiumButton>
-                <button onClick={() => setPendingHouse(null)} className="text-xs text-ink/40 hover:text-ink/60 mt-2">Cancel</button>
+                <button onClick={() => setPendingHouse(null)} className="text-xs text-white/40 hover:text-white/60 mt-2">Cancel</button>
               </div>
             </div>
           </div>
