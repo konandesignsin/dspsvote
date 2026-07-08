@@ -20,13 +20,13 @@ export interface VoteRecord {
   ts: number;
 }
 
-// House palette — balanced so all four read as equally "premium" in intensity.
-// Hues preserved; only saturation/brightness fine-tuned for consistency.
+// House palette — deepened so accent colors read cleanly on a light base
+// while preserving each house's identity (gold, blue, green, orange).
 export const HOUSES: { id: House; name: string; color: string; glow: string; hex: string }[] = [
-  { id: "minotaur", name: "Minotaur", color: "#fcd34d", glow: "rgba(252,211,77,0.6)", hex: "#fcd34d" },
-  { id: "kraken", name: "Kraken", color: "#60a5fa", glow: "rgba(96,165,250,0.6)", hex: "#60a5fa" },
-  { id: "thunderbird", name: "Thunderbird", color: "#4ade80", glow: "rgba(74,222,128,0.6)", hex: "#4ade80" },
-  { id: "dragon", name: "Dragon", color: "#fb923c", glow: "rgba(251,146,60,0.6)", hex: "#fb923c" },
+  { id: "minotaur", name: "Minotaur", color: "#d97706", glow: "rgba(217,119,6,0.45)", hex: "#d97706" },
+  { id: "kraken", name: "Kraken", color: "#2563eb", glow: "rgba(37,99,235,0.45)", hex: "#2563eb" },
+  { id: "thunderbird", name: "Thunderbird", color: "#16a34a", glow: "rgba(22,163,74,0.45)", hex: "#16a34a" },
+  { id: "dragon", name: "Dragon", color: "#ea580c", glow: "rgba(234,88,12,0.45)", hex: "#ea580c" },
 ];
 
 export const ROLE_LABEL: Record<Role, string> = {

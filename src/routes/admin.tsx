@@ -49,10 +49,10 @@ function AdminPage() {
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-8">
         <header className="flex items-center justify-between mb-8 animate-fade-up">
           <div>
-            <p className="text-xs uppercase tracking-widest text-white/40">Election Control</p>
+            <p className="text-xs uppercase tracking-widest text-ink/40">Election Control</p>
             <h1 className="text-3xl font-bold text-gradient-luxury">Admin Panel</h1>
           </div>
-          <Link to="/" className="glass rounded-full px-4 py-2 text-xs text-white/70 hover:text-white flex items-center gap-2 transition hover:scale-105">
+          <Link to="/" className="glass rounded-full px-4 py-2 text-xs text-ink/70 hover:text-ink flex items-center gap-2 transition hover:scale-105">
             <Home className="w-3.5 h-3.5" /> Home
           </Link>
         </header>
@@ -63,7 +63,7 @@ function AdminPage() {
               key={t}
               onClick={() => setActiveTab(t)}
               className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${
-                activeTab === t ? "bg-white/15 text-white" : "text-white/50 hover:text-white"
+                activeTab === t ? "bg-ink/15 text-ink" : "text-ink/50 hover:text-ink"
               }`}
             >
               {t === "houses" ? "House Management" : t === "device" ? "Device Settings" : t === "branding" ? "School Branding" : t[0].toUpperCase() + t.slice(1)}
@@ -91,7 +91,7 @@ function Dashboard({ candidates, totals }: { candidates: Candidate[]; totals: { 
       <Stat label="Houses" value={HOUSES.length} accent="#22c55e" />
 
       <div className="md:col-span-2 glass rounded-3xl p-6">
-        <h3 className="text-white font-semibold mb-4">Votes by House</h3>
+        <h3 className="text-ink font-semibold mb-4">Votes by House</h3>
         <div className="h-72">
           <ResponsiveContainer>
             <BarChart data={data}>
@@ -107,7 +107,7 @@ function Dashboard({ candidates, totals }: { candidates: Candidate[]; totals: { 
       </div>
 
       <div className="glass rounded-3xl p-6">
-        <h3 className="text-white font-semibold mb-4">House Share</h3>
+        <h3 className="text-ink font-semibold mb-4">House Share</h3>
         <div className="h-72">
           <ResponsiveContainer>
             <PieChart>
@@ -128,8 +128,8 @@ function BrandingTab() {
   return (
     <div className="animate-fade-up max-w-3xl">
       <div className="glass rounded-3xl p-6 mb-6">
-        <h3 className="text-white font-semibold text-lg mb-1">School Branding</h3>
-        <p className="text-white/50 text-sm">
+        <h3 className="text-ink font-semibold text-lg mb-1">School Branding</h3>
+        <p className="text-ink/50 text-sm">
           Upload the official school logo. It is saved to the shared cloud and
           appears automatically on every device — home page, voting headers,
           and results.
@@ -150,7 +150,7 @@ function BrandingTab() {
           <SchoolLogoMark url={logo} size={140} />
           <div className="space-y-5">
             <div>
-              <p className="text-[10px] uppercase tracking-[0.4em] text-white/40 mb-1">School</p>
+              <p className="text-[10px] uppercase tracking-[0.4em] text-ink/40 mb-1">School</p>
               <p className="text-2xl font-bold text-shine">{SCHOOL_NAME}</p>
             </div>
             <ImageUpload
@@ -162,7 +162,7 @@ function BrandingTab() {
               maxSize={1024}
               preserveTransparency
             />
-            <p className="text-xs text-white/40 leading-relaxed">
+            <p className="text-xs text-ink/40 leading-relaxed">
               Use a square PNG with a transparent background for best results.
               Synced globally — every device updates automatically.
             </p>
@@ -177,8 +177,8 @@ function Stat({ label, value, accent }: { label: string; value: number; accent: 
   return (
     <div className="glass rounded-3xl p-6 relative overflow-hidden">
       <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full blur-3xl opacity-30" style={{ background: accent }} />
-      <p className="text-xs uppercase tracking-widest text-white/40 mb-1">{label}</p>
-      <p className="text-5xl font-bold text-white">{value}</p>
+      <p className="text-xs uppercase tracking-widest text-ink/40 mb-1">{label}</p>
+      <p className="text-5xl font-bold text-ink">{value}</p>
     </div>
   );
 }
@@ -216,7 +216,7 @@ function CandidatesTab({ candidates }: { candidates: Candidate[] }) {
           <option value="none">Common (SPL/ASPL)</option>
           {HOUSES.map((h) => <option key={h.id} value={h.id}>{h.name}</option>)}
         </select>
-        <button onClick={() => setAdding(true)} className="glass rounded-full px-5 py-2.5 text-sm text-white flex items-center gap-2 hover:scale-105 transition" style={{ boxShadow: "0 0 30px rgba(167,139,250,0.4)" }}>
+        <button onClick={() => setAdding(true)} className="glass rounded-full px-5 py-2.5 text-sm text-ink flex items-center gap-2 hover:scale-105 transition" style={{ boxShadow: "0 0 30px rgba(167,139,250,0.4)" }}>
           <Plus className="w-4 h-4" /> Add Candidate
         </button>
       </div>
@@ -234,18 +234,18 @@ function CandidatesTab({ candidates }: { candidates: Candidate[] }) {
                 {c.photo ? <img src={c.photo} alt="" className="w-full h-full object-cover" /> : c.name[0]}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-white font-semibold truncate">{c.name}</p>
-                <p className="text-xs text-white/50">{ROLE_LABEL[c.role]}{houseInfo ? ` · ${houseInfo.name}` : " · Common"}</p>
+                <p className="text-ink font-semibold truncate">{c.name}</p>
+                <p className="text-xs text-ink/50">{ROLE_LABEL[c.role]}{houseInfo ? ` · ${houseInfo.name}` : " · Common"}</p>
               </div>
               {c.symbol && (
-                <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 bg-white/5 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 bg-ink/5 flex items-center justify-center">
                   {c.symbol.startsWith("data:") || c.symbol.startsWith("http")
                     ? <img src={c.symbol} alt="" className="w-full h-full object-contain" />
                     : <span className="text-2xl">{c.symbol}</span>}
                 </div>
               )}
               <div className="flex gap-1">
-                <button onClick={() => setEditing(c)} className="glass w-9 h-9 rounded-full flex items-center justify-center text-white/70 hover:text-white">
+                <button onClick={() => setEditing(c)} className="glass w-9 h-9 rounded-full flex items-center justify-center text-ink/70 hover:text-ink">
                   <Pencil className="w-3.5 h-3.5" />
                 </button>
                 <button onClick={() => confirm("Delete candidate?") && store.deleteCandidate(c.id)} className="glass w-9 h-9 rounded-full flex items-center justify-center text-red-300 hover:text-red-200">
@@ -256,7 +256,7 @@ function CandidatesTab({ candidates }: { candidates: Candidate[] }) {
           );
         })}
         {filtered.length === 0 && (
-          <div className="col-span-full glass rounded-2xl p-10 text-center text-white/40">No candidates match.</div>
+          <div className="col-span-full glass rounded-2xl p-10 text-center text-ink/40">No candidates match.</div>
         )}
       </div>
 
@@ -295,10 +295,10 @@ function CandidateForm({ initial, onClose }: { initial: Candidate | null; onClos
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/60 backdrop-blur-md">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/25 backdrop-blur-md">
       <div className="glass-strong rounded-3xl p-8 max-w-md w-full relative">
-        <button onClick={onClose} className="absolute top-4 right-4 text-white/50 hover:text-white"><X className="w-5 h-5" /></button>
-        <h3 className="text-2xl font-bold text-white mb-6">{initial ? "Edit" : "Add"} Candidate</h3>
+        <button onClick={onClose} className="absolute top-4 right-4 text-ink/50 hover:text-ink"><X className="w-5 h-5" /></button>
+        <h3 className="text-2xl font-bold text-ink mb-6">{initial ? "Edit" : "Add"} Candidate</h3>
         <div className="space-y-4">
           <Field label="Name"><input value={name} onChange={(e) => setName(e.target.value)} className="glass-input rounded-xl px-4 py-2.5 w-full text-sm" /></Field>
           <Field label="Role">
@@ -336,8 +336,8 @@ function CandidateForm({ initial, onClose }: { initial: Candidate | null; onClos
           </Field>
         </div>
         <div className="flex gap-3 mt-6">
-          <button onClick={save} className="glass-strong flex-1 rounded-xl py-3 text-white font-medium hover:scale-[1.02] transition" style={{ boxShadow: "0 0 30px rgba(167,139,250,0.4)" }}>Save</button>
-          <button onClick={onClose} className="rounded-xl px-5 text-white/60 hover:text-white">Cancel</button>
+          <button onClick={save} className="glass-strong flex-1 rounded-xl py-3 text-ink font-medium hover:scale-[1.02] transition" style={{ boxShadow: "0 0 30px rgba(167,139,250,0.4)" }}>Save</button>
+          <button onClick={onClose} className="rounded-xl px-5 text-ink/60 hover:text-ink">Cancel</button>
         </div>
       </div>
     </div>
@@ -347,7 +347,7 @@ function CandidateForm({ initial, onClose }: { initial: Candidate | null; onClos
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="text-xs uppercase tracking-widest text-white/50 mb-1.5 block">{label}</span>
+      <span className="text-xs uppercase tracking-widest text-ink/50 mb-1.5 block">{label}</span>
       {children}
     </label>
   );
@@ -393,9 +393,9 @@ function ResultsTab({ candidates, totals }: { candidates: Candidate[]; totals: {
   return (
     <div className="animate-fade-up space-y-6">
       <div className="flex flex-wrap gap-3">
-        <button onClick={exportCSV} className="glass rounded-full px-5 py-2.5 text-sm text-white flex items-center gap-2 hover:scale-105 transition"><Download className="w-4 h-4" /> Export CSV</button>
-        <button onClick={exportJSON} className="glass rounded-full px-5 py-2.5 text-sm text-white flex items-center gap-2 hover:scale-105 transition"><Download className="w-4 h-4" /> Export JSON</button>
-        <button onClick={exportPDF} className="glass rounded-full px-5 py-2.5 text-sm text-white flex items-center gap-2 hover:scale-105 transition"><Download className="w-4 h-4" /> Export PDF</button>
+        <button onClick={exportCSV} className="glass rounded-full px-5 py-2.5 text-sm text-ink flex items-center gap-2 hover:scale-105 transition"><Download className="w-4 h-4" /> Export CSV</button>
+        <button onClick={exportJSON} className="glass rounded-full px-5 py-2.5 text-sm text-ink flex items-center gap-2 hover:scale-105 transition"><Download className="w-4 h-4" /> Export JSON</button>
+        <button onClick={exportPDF} className="glass rounded-full px-5 py-2.5 text-sm text-ink flex items-center gap-2 hover:scale-105 transition"><Download className="w-4 h-4" /> Export PDF</button>
         <button onClick={reset} className="glass rounded-full px-5 py-2.5 text-sm text-red-200 flex items-center gap-2 hover:scale-105 transition ml-auto" style={{ boxShadow: "0 0 30px rgba(248,113,113,0.3)" }}>
           <RotateCcw className="w-4 h-4" /> Reset Election
         </button>
@@ -403,9 +403,9 @@ function ResultsTab({ candidates, totals }: { candidates: Candidate[]; totals: {
 
       {grouped.map(({ role, items }) => (
         <div key={role} className="glass rounded-3xl p-6">
-          <h3 className="text-white font-semibold mb-4">{ROLE_LABEL[role]}</h3>
+          <h3 className="text-ink font-semibold mb-4">{ROLE_LABEL[role]}</h3>
           <div className="space-y-2">
-            {items.length === 0 && <p className="text-white/40 text-sm">No candidates.</p>}
+            {items.length === 0 && <p className="text-ink/40 text-sm">No candidates.</p>}
             {items.map((c, i) => {
               const max = Math.max(...items.map((x) => x.votes), 1);
               const pct = (c.votes / max) * 100;
@@ -415,11 +415,11 @@ function ResultsTab({ candidates, totals }: { candidates: Candidate[]; totals: {
                   <div className="absolute inset-y-0 left-0 transition-all" style={{ width: `${pct}%`, background: `linear-gradient(to right, ${accent}30, transparent)` }} />
                   <div className="relative flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
-                      <span className="text-white/40 text-xs w-5">{i + 1}</span>
-                      <span className="text-white font-medium">{c.name}</span>
+                      <span className="text-ink/40 text-xs w-5">{i + 1}</span>
+                      <span className="text-ink font-medium">{c.name}</span>
                       {c.house && <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: `${accent}20`, color: accent }}>{HOUSES.find((h) => h.id === c.house)!.name}</span>}
                     </div>
-                    <span className="text-white font-bold tabular-nums">{c.votes}</span>
+                    <span className="text-ink font-bold tabular-nums">{c.votes}</span>
                   </div>
                 </div>
               );
@@ -435,8 +435,8 @@ function HousesTab() {
   return (
     <div className="animate-fade-up">
       <div className="glass rounded-3xl p-6 mb-6">
-        <h3 className="text-white font-semibold text-lg mb-1">House Symbol Management</h3>
-        <p className="text-white/50 text-sm">Upload a symbol/logo for each house. They appear on the home page house cards with a soft glow.</p>
+        <h3 className="text-ink font-semibold text-lg mb-1">House Symbol Management</h3>
+        <p className="text-ink/50 text-sm">Upload a symbol/logo for each house. They appear on the home page house cards with a soft glow.</p>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         {HOUSES.map((h) => {
@@ -465,7 +465,7 @@ function HousesTab() {
                     )}
                   </div>
                   <div>
-                    <p className="text-xs uppercase tracking-widest text-white/40">House</p>
+                    <p className="text-xs uppercase tracking-widest text-ink/40">House</p>
                     <h4 className="text-xl font-bold" style={{ color: h.color }}>{h.name}</h4>
                   </div>
                 </div>
@@ -508,8 +508,8 @@ function DeviceTab() {
           style={{ background: info?.color ?? "#a78bfa" }}
         />
 
-        <p className="text-xs uppercase tracking-[0.4em] text-white/40 mb-2">Device Settings</p>
-        <h2 className="text-3xl font-bold text-white mb-6">House Lock</h2>
+        <p className="text-xs uppercase tracking-[0.4em] text-ink/40 mb-2">Device Settings</p>
+        <h2 className="text-3xl font-bold text-ink mb-6">House Lock</h2>
 
         <div className="glass rounded-2xl p-6 mb-6 flex items-center gap-4">
           <div
@@ -519,22 +519,22 @@ function DeviceTab() {
               boxShadow: info ? `0 0 30px ${info.glow}` : undefined,
             }}
           >
-            {info ? <Lock className="w-6 h-6" style={{ color: info.color }} /> : <Unlock className="w-6 h-6 text-white/40" />}
+            {info ? <Lock className="w-6 h-6" style={{ color: info.color }} /> : <Unlock className="w-6 h-6 text-ink/40" />}
           </div>
           <div className="flex-1">
-            <p className="text-[10px] uppercase tracking-widest text-white/40">Current Status</p>
+            <p className="text-[10px] uppercase tracking-widest text-ink/40">Current Status</p>
             {info ? (
               <p className="text-xl font-bold" style={{ color: info.color }}>
                 Locked · {info.name} House
               </p>
             ) : (
-              <p className="text-xl font-bold text-white/70">Unlocked</p>
+              <p className="text-xl font-bold text-ink/70">Unlocked</p>
             )}
           </div>
         </div>
 
-        <p className="text-xs text-white/40 mb-5 leading-relaxed">
-          These actions only affect <span className="text-white/70 font-semibold">this device</span>. Locks are stored
+        <p className="text-xs text-ink/40 mb-5 leading-relaxed">
+          These actions only affect <span className="text-ink/70 font-semibold">this device</span>. Locks are stored
           locally in this browser and never synchronized with other computers.
         </p>
 
@@ -543,7 +543,7 @@ function DeviceTab() {
             <button
               key={h.id}
               onClick={() => { store.setLock(h.id); }}
-              className="glass rounded-2xl px-4 py-3 text-sm font-medium text-white flex items-center gap-3 hover:scale-[1.02] transition"
+              className="glass rounded-2xl px-4 py-3 text-sm font-medium text-ink flex items-center gap-3 hover:scale-[1.02] transition"
               style={{
                 border: lock === h.id ? `1px solid ${h.color}` : `1px solid ${h.color}22`,
                 boxShadow: lock === h.id ? `0 0 30px ${h.glow}` : undefined,
@@ -560,7 +560,7 @@ function DeviceTab() {
           <button
             onClick={() => { store.setLock(null); }}
             disabled={!lock}
-            className="glass rounded-2xl px-5 py-3 text-sm font-medium text-white flex items-center gap-2 hover:scale-[1.02] transition disabled:opacity-30 disabled:cursor-not-allowed"
+            className="glass rounded-2xl px-5 py-3 text-sm font-medium text-ink flex items-center gap-2 hover:scale-[1.02] transition disabled:opacity-30 disabled:cursor-not-allowed"
           >
             <Unlock className="w-4 h-4" /> Unlock Device
           </button>
@@ -578,7 +578,7 @@ function DeviceTab() {
           {lock && (
             <button
               onClick={() => navigate({ to: "/vote/$house", params: { house: lock } })}
-              className="glass rounded-2xl px-5 py-3 text-sm font-medium text-white flex items-center gap-2 hover:scale-[1.02] transition ml-auto"
+              className="glass rounded-2xl px-5 py-3 text-sm font-medium text-ink flex items-center gap-2 hover:scale-[1.02] transition ml-auto"
               style={info ? { boxShadow: `0 0 30px ${info.glow}` } : undefined}
             >
               Go to {info?.name} Voting →
