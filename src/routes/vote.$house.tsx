@@ -294,8 +294,8 @@ function VotePage() {
                             </div>
                           )}
                           {/* Name */}
-                          <p className="text-white font-semibold text-lg truncate w-full px-2">{c.name}</p>
-                          <p className="text-[10px] text-white/45 uppercase tracking-widest mt-1 truncate w-full">
+                          <p className="text-white font-semibold text-lg truncate w-full px-2 text-legible">{c.name}</p>
+                          <p className="text-[11px] text-white/75 uppercase tracking-widest mt-1 truncate w-full">
                             {c.house ? HOUSES.find((h) => h.id === c.house)!.name : "Common"}
                           </p>
                         </TiltGlass>
@@ -315,8 +315,11 @@ function VotePage() {
             onClick={openReview}
             className="glass-strong rounded-full px-10 py-4 font-semibold text-white text-base disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 hover:scale-105 flex items-center gap-3"
             style={allFilled ? {
-              boxShadow: `0 0 60px ${houseGlow}, inset 0 1px 0 rgba(255,255,255,0.2)`,
-              background: `linear-gradient(135deg, ${houseColor}30, rgba(255,255,255,0.04))`,
+              boxShadow: `0 0 60px ${houseGlow}, 0 12px 40px -8px ${houseGlow}, inset 0 1px 0 rgba(255,255,255,0.3)`,
+              background: `linear-gradient(135deg, ${houseColor}, ${houseColor}bb)`,
+              border: `1px solid ${houseColor}`,
+              color: "#0b0a1e",
+              textShadow: "0 1px 0 rgba(255,255,255,0.35)",
             } : undefined}
           >
             <Sparkles className="w-4 h-4" />
