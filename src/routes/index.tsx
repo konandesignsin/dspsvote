@@ -101,7 +101,7 @@ function Index() {
               as="button"
               intensity={14}
               onClick={() => chooseHouse(h.id)}
-              className={`house-card-${h.id} group glass rounded-3xl p-8 text-left animate-fade-up cursor-pointer overflow-hidden`}
+              className={`house-card-${h.id} group glass-card rounded-3xl p-8 text-left animate-fade-up cursor-pointer overflow-hidden`}
               style={{ animationDelay: `${0.2 + i * 0.1}s` }}
             >
               {/* glow halo */}
@@ -137,12 +137,25 @@ function Index() {
                     </span>
                   )}
                 </div>
-                <p className="text-xs uppercase tracking-widest text-white/40 mb-2">House</p>
-                <h3 className="text-3xl font-bold mb-2" style={{ color: h.color }}>{h.name}</h3>
-                <p className="text-white/50 text-sm">
+                <p className="text-xs uppercase tracking-widest text-white/70 mb-2">House</p>
+                <h3
+                  className="text-3xl font-bold mb-2 text-legible"
+                  style={{ color: h.color, textShadow: `0 0 20px ${h.glow}, 0 1px 2px rgba(0,0,0,0.6)` }}
+                >
+                  {h.name}
+                </h3>
+                <p className="text-white/85 text-sm text-legible">
                   Enter and cast your vote for {h.name} leaders.
                 </p>
-                <div className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-white/80 group-hover:text-white">
+                <div
+                  className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-white rounded-full px-4 py-2 transition-all group-hover:scale-[1.03]"
+                  style={{
+                    background: `linear-gradient(135deg, ${h.color}55, ${h.color}22)`,
+                    border: `1px solid ${h.color}aa`,
+                    boxShadow: `0 8px 24px -8px ${h.glow}, inset 0 1px 0 rgba(255,255,255,0.25)`,
+                    textShadow: "0 1px 2px rgba(0,0,0,0.55)",
+                  }}
+                >
                   Vote now <span className="transition-transform group-hover:translate-x-1">→</span>
                 </div>
               </div>
