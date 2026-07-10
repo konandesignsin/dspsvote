@@ -382,13 +382,24 @@ function ResultsTab({ candidates, totals }: { candidates: Candidate[]; totals: {
     if (confirm("Are you sure? This will erase all vote data.")) store.resetVotes();
   }
 
-  const grouped = (["spl", "aspl", "captain", "vice-captain"] as Role[]).map((role) => ({
+  const commonGrouped = (["spl", "aspl"] as Role[]).map((role) => ({
     role,
     items: candidates
       .filter((c) => c.role === role)
       .map((c) => ({ ...c, votes: totals.byCandidate[c.id] || 0 }))
       .sort((a, b) => b.votes - a.votes),
   }));
+
+  const houseGrouped = HOUSES.map((h) => {
+    const roles = (["captain", "vice-captain"] as Role[]).map((role) => {
+      const items = candidates
+        .filter((c) => c.role === role && c.house === h.id)
+        .map((c) => ({ ...c, votes: totals.byCandidate[c.id] || 0 }))
+        .sort((a, b) => b.votes - a.votes);
+      return { role, items, leader: items[0] };
+    });
+    return { house: h, roles };
+  });
 
   return (
     <div className="animate-fade-up space-y-6">
@@ -401,7 +412,85 @@ function ResultsTab({ candidates, totals }: { candidates: Candidate[]; totals: {
         </button>
       </div>
 
-      {grouped.map(({ role, items }) => (
+      {/* House-wise sections with leading candidate highlighted */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        {houseGrouped.map(({ house: h, roles }) => (
+          <div
+            key={h.id}
+            className="glass rounded-3xl p-6 relative overflow-hidden"
+            style={{ boxShadow: `0 0 40px ${h.color}25, inset 0 0 0 1px ${h.color}30` }}
+          >
+            <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full blur-3xl opacity-30" style={{ background: h.color }} />
+            <div className="relative">
+              <div className="flex items-center justify-between mb-5">
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.25em] text-white/50">House</p>
+                  <h3 className="text-2xl font-bold" style={{ color: h.color, textShadow: `0 0 20px ${h.glow}` }}>{h.name}</h3>
+                </div>
+                <span className="text-xs px-3 py-1 rounded-full" style={{ background: `${h.color}20`, color: h.color, border: `1px solid ${h.color}55` }}>
+                  {roles.reduce((s, r) => s + r.items.reduce((a, b) => a + b.votes, 0), 0)} votes
+                </span>
+              </div>
+
+              {roles.map(({ role, items, leader }) => {
+                const totalRoleVotes = items.reduce((a, b) => a + b.votes, 0);
+                return (
+                  <div key={role} className="mb-5 last:mb-0">
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-xs uppercase tracking-widest text-white/60">{ROLE_LABEL[role]}</p>
+                      {leader && leader.votes > 0 && (
+                        <span className="text-[10px] uppercase tracking-widest px-2 py-0.5 rounded-full" style={{ background: `${h.color}30`, color: h.color, border: `1px solid ${h.color}60` }}>
+                          Leading
+                        </span>
+                      )}
+                    </div>
+                    {leader ? (
+                      <div
+                        className="rounded-2xl px-4 py-3 mb-2 flex items-center gap-3"
+                        style={{
+                          background: `linear-gradient(135deg, ${h.color}25, ${h.color}08)`,
+                          border: `1px solid ${h.color}55`,
+                          boxShadow: `0 0 24px ${h.color}30`,
+                        }}
+                      >
+                        {leader.photo ? (
+                          <img src={leader.photo} alt={leader.name} className="w-12 h-12 rounded-full object-cover" style={{ border: `2px solid ${h.color}` }} />
+                        ) : (
+                          <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-white/80" style={{ background: `${h.color}30`, border: `2px solid ${h.color}` }}>
+                            {leader.name.charAt(0)}
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-white font-semibold truncate">{leader.name}</p>
+                          <p className="text-xs text-white/60">{leader.votes} vote{leader.votes === 1 ? "" : "s"} {totalRoleVotes > 0 && `• ${Math.round((leader.votes / totalRoleVotes) * 100)}%`}</p>
+                        </div>
+                        <span className="text-2xl font-bold tabular-nums" style={{ color: h.color }}>{leader.votes}</span>
+                      </div>
+                    ) : (
+                      <p className="text-white/40 text-sm py-2">No candidates.</p>
+                    )}
+                    {items.slice(1).map((c) => {
+                      const pct = totalRoleVotes > 0 ? (c.votes / totalRoleVotes) * 100 : 0;
+                      return (
+                        <div key={c.id} className="relative rounded-xl px-3 py-2 overflow-hidden mt-1" style={{ background: "rgba(255,255,255,0.03)" }}>
+                          <div className="absolute inset-y-0 left-0" style={{ width: `${pct}%`, background: `linear-gradient(to right, ${h.color}20, transparent)` }} />
+                          <div className="relative flex items-center justify-between">
+                            <span className="text-white/80 text-sm truncate">{c.name}</span>
+                            <span className="text-white/90 text-sm font-medium tabular-nums">{c.votes}</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Common school-wide roles */}
+      {commonGrouped.map(({ role, items }) => (
         <div key={role} className="glass rounded-3xl p-6">
           <h3 className="text-white font-semibold mb-4">{ROLE_LABEL[role]}</h3>
           <div className="space-y-2">
