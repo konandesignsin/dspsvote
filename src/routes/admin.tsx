@@ -23,6 +23,16 @@ export const Route = createFileRoute("/admin")({
 });
 
 function AdminPage() {
+  const [unlocked, setUnlocked] = useState(false);
+  const [checked, setChecked] = useState(false);
+
+  useEffect(() => {
+    try {
+      setUnlocked(sessionStorage.getItem("admin.unlocked") === "1");
+    } catch {}
+    setChecked(true);
+  }, []);
+
   const candidates = useStore(() => store.getCandidates());
   const votes = useStore(() => store.getVotes());
   const [activeTab, setActiveTab] = useState<"dashboard" | "candidates" | "houses" | "branding" | "results" | "device">("dashboard");
@@ -42,6 +52,9 @@ function AdminPage() {
     return { byHouse, byCandidate, total: votes.length };
   }, [votes]);
 
+  if (!checked) return null;
+  if (!unlocked) return <AdminGate onUnlock={() => setUnlocked(true)} />;
+
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
       <AuroraBg />
@@ -52,9 +65,20 @@ function AdminPage() {
             <p className="text-xs uppercase tracking-widest text-white/40">Election Control</p>
             <h1 className="text-3xl font-bold text-gradient-luxury">Admin Panel</h1>
           </div>
-          <Link to="/" className="glass rounded-full px-4 py-2 text-xs text-white/70 hover:text-white flex items-center gap-2 transition hover:scale-105">
-            <Home className="w-3.5 h-3.5" /> Home
-          </Link>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => {
+                try { sessionStorage.removeItem("admin.unlocked"); } catch {}
+                setUnlocked(false);
+              }}
+              className="glass rounded-full px-4 py-2 text-xs text-white/70 hover:text-white flex items-center gap-2 transition hover:scale-105"
+            >
+              <LogOut className="w-3.5 h-3.5" /> Lock
+            </button>
+            <Link to="/" className="glass rounded-full px-4 py-2 text-xs text-white/70 hover:text-white flex items-center gap-2 transition hover:scale-105">
+              <Home className="w-3.5 h-3.5" /> Home
+            </Link>
+          </div>
         </header>
 
         <nav className="glass rounded-full p-1.5 inline-flex flex-wrap gap-1 mb-8">
