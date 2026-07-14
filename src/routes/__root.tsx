@@ -8,11 +8,89 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
+import { useState } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { store } from "@/lib/election";
 import { supabase } from "@/integrations/supabase/client";
+import { SchoolBrand } from "@/components/SchoolBrand";
+
+const SITE_PASSWORD = "dawn2026";
+const SITE_UNLOCK_KEY = "site.unlocked";
+
+function SiteGate({ children }: { children: ReactNode }) {
+  const [unlocked, setUnlocked] = useState(false);
+  const [ready, setReady] = useState(false);
+  const [pw, setPw] = useState("");
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem(SITE_UNLOCK_KEY) === "1") setUnlocked(true);
+    } catch {}
+    setReady(true);
+  }, []);
+
+  if (!ready) return null;
+  if (unlocked) return <>{children}</>;
+
+  return (
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#05070d] px-4 py-10">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-70"
+        style={{
+          background:
+            "radial-gradient(1200px 600px at 20% 10%, rgba(99,102,241,0.25), transparent 60%), radial-gradient(900px 500px at 80% 90%, rgba(20,184,166,0.22), transparent 60%), radial-gradient(700px 400px at 50% 50%, rgba(244,114,182,0.15), transparent 60%)",
+        }}
+      />
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (pw === SITE_PASSWORD) {
+            try {
+              sessionStorage.setItem(SITE_UNLOCK_KEY, "1");
+            } catch {}
+            setUnlocked(true);
+            setError(false);
+          } else {
+            setError(true);
+          }
+        }}
+        className="relative z-10 w-full max-w-md rounded-2xl border border-white/10 bg-white/5 p-8 shadow-2xl backdrop-blur-xl"
+      >
+        <div className="mb-6 flex justify-center">
+          <SchoolBrand size="md" showSubtitle={false} />
+        </div>
+        <h1 className="text-center text-xl font-bold text-white">Restricted Access</h1>
+        <p className="mt-2 text-center text-sm text-white/60">
+          Enter the password to continue.
+        </p>
+        <input
+          type="password"
+          autoFocus
+          value={pw}
+          onChange={(e) => {
+            setPw(e.target.value);
+            if (error) setError(false);
+          }}
+          placeholder="Password"
+          className="mt-6 w-full rounded-lg border border-white/15 bg-black/40 px-4 py-3 text-white placeholder:text-white/40 outline-none focus:border-white/40"
+        />
+        {error && (
+          <p className="mt-2 text-center text-sm text-rose-400">Incorrect password</p>
+        )}
+        <button
+          type="submit"
+          className="mt-5 w-full rounded-lg bg-white px-4 py-3 font-semibold text-black transition hover:bg-white/90"
+        >
+          Unlock
+        </button>
+      </form>
+    </div>
+  );
+}
 
 function NotFoundComponent() {
   return (
@@ -149,7 +227,9 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <SiteGate>
+        <Outlet />
+      </SiteGate>
     </QueryClientProvider>
   );
 }
