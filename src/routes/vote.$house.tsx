@@ -72,10 +72,12 @@ function VotePage() {
   const houseColor = houseInfo.color;
   const houseGlow = houseInfo.glow;
 
+  const COMMON_ROLES: Role[] = ["spl", "aspl", "sports-sec", "cultural-sec"];
+
   function candidatesFor(role: Role): Candidate[] {
     return candidates.filter((c) => {
       if (c.role !== role) return false;
-      if (role === "spl" || role === "aspl") return true;
+      if (COMMON_ROLES.includes(role)) return true;
       return c.house === house;
     });
   }
@@ -151,8 +153,18 @@ function VotePage() {
         <div className="space-y-16 pb-40">
           {ROLES_ORDER.map(({ role, theme, Icon }, idx) => {
             const list = candidatesFor(role);
-            const accent = role === "spl" ? "#fbbf24" : role === "aspl" ? "#a78bfa" : houseColor;
-            const glow = role === "spl" ? "rgba(251,191,36,0.5)" : role === "aspl" ? "rgba(167,139,250,0.5)" : houseGlow;
+            const accent =
+              role === "spl" ? "#fbbf24"
+              : role === "aspl" ? "#a78bfa"
+              : role === "sports-sec" ? "#34d399"
+              : role === "cultural-sec" ? "#f472b6"
+              : houseColor;
+            const glow =
+              role === "spl" ? "rgba(251,191,36,0.5)"
+              : role === "aspl" ? "rgba(167,139,250,0.5)"
+              : role === "sports-sec" ? "rgba(52,211,153,0.5)"
+              : role === "cultural-sec" ? "rgba(244,114,182,0.5)"
+              : houseGlow;
             const selectedId = selections[role];
             return (
               <section
