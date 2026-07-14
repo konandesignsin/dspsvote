@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AuroraBg, Particles } from "@/components/AuroraBg";
 import {
   HOUSES,
@@ -10,7 +10,7 @@ import {
   type House,
   type Role,
 } from "@/lib/election";
-import { Pencil, Trash2, Plus, Download, RotateCcw, Home, X, Lock, Unlock, Trash } from "lucide-react";
+import { Pencil, Trash2, Plus, Download, RotateCcw, Home, X, Lock, Unlock, Trash, LogOut, ShieldCheck } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, PieChart, Pie, Cell, Legend } from "recharts";
 import { ImageUpload } from "@/components/ImageUpload";
