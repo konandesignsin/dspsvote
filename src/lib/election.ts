@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 export type House = "minotaur" | "kraken" | "thunderbird" | "dragon";
-export type Role = "spl" | "aspl" | "captain" | "vice-captain";
+export type Role = "spl" | "aspl" | "sports-sec" | "cultural-sec" | "captain" | "vice-captain";
 
 export interface Candidate {
   id: string;
@@ -32,6 +32,8 @@ export const HOUSES: { id: House; name: string; color: string; glow: string; hex
 export const ROLE_LABEL: Record<Role, string> = {
   spl: "School Pupil Leader",
   aspl: "Assistant School Pupil Leader",
+  "sports-sec": "Sports Secretary",
+  "cultural-sec": "Cultural Secretary",
   captain: "Captain",
   "vice-captain": "Vice Captain",
 };
@@ -155,6 +157,10 @@ export function seedIfEmpty() {
     { name: "Priya Sharma", role: "spl", house: null },
     { name: "Rohan Iyer", role: "aspl", house: null },
     { name: "Ananya Verma", role: "aspl", house: null },
+    { name: "Kabir Nair", role: "sports-sec", house: null },
+    { name: "Isha Kapoor", role: "sports-sec", house: null },
+    { name: "Vivaan Rao", role: "cultural-sec", house: null },
+    { name: "Meera Joshi", role: "cultural-sec", house: null },
     ...HOUSES.flatMap((h) => [
       { name: `${h.name} Cap A`, role: "captain" as Role, house: h.id },
       { name: `${h.name} Cap B`, role: "captain" as Role, house: h.id },
