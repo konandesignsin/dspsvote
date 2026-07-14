@@ -378,8 +378,18 @@ function ReviewOverlay({
   const rows = ROLES_ORDER.map(({ role, Icon }) => {
     const id = selections[role];
     const cand = id ? candidates.find((c) => c.id === id) : undefined;
-    const accent = role === "spl" ? "#fbbf24" : role === "aspl" ? "#a78bfa" : color;
-    const accentGlow = role === "spl" ? "rgba(251,191,36,0.5)" : role === "aspl" ? "rgba(167,139,250,0.5)" : glow;
+    const accent =
+      role === "spl" ? "#fbbf24"
+      : role === "aspl" ? "#a78bfa"
+      : role === "sports-sec" ? "#34d399"
+      : role === "cultural-sec" ? "#f472b6"
+      : color;
+    const accentGlow =
+      role === "spl" ? "rgba(251,191,36,0.5)"
+      : role === "aspl" ? "rgba(167,139,250,0.5)"
+      : role === "sports-sec" ? "rgba(52,211,153,0.5)"
+      : role === "cultural-sec" ? "rgba(244,114,182,0.5)"
+      : glow;
     return { role, Icon, cand, accent, accentGlow };
   }).filter((r) => r.cand);
 
