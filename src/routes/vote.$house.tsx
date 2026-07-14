@@ -19,7 +19,7 @@ import {
   type House,
   type Role,
 } from "@/lib/election";
-import { Check, Sparkles, Home, Crown, Gem, Shield, Star } from "lucide-react";
+import { Check, Sparkles, Home, Crown, Gem, Shield, Star, Trophy, Music } from "lucide-react";
 
 export const Route = createFileRoute("/vote/$house")({
   head: () => ({
@@ -31,6 +31,8 @@ export const Route = createFileRoute("/vote/$house")({
 const ROLES_ORDER: { role: Role; theme: string; Icon: any }[] = [
   { role: "spl", theme: "SPL", Icon: Crown },
   { role: "aspl", theme: "ASPL", Icon: Gem },
+  { role: "sports-sec", theme: "Sports Secretary", Icon: Trophy },
+  { role: "cultural-sec", theme: "Cultural Secretary", Icon: Music },
   { role: "captain", theme: "Captain", Icon: Shield },
   { role: "vice-captain", theme: "Vice Captain", Icon: Star },
 ];
@@ -70,10 +72,12 @@ function VotePage() {
   const houseColor = houseInfo.color;
   const houseGlow = houseInfo.glow;
 
+  const COMMON_ROLES: Role[] = ["spl", "aspl", "sports-sec", "cultural-sec"];
+
   function candidatesFor(role: Role): Candidate[] {
     return candidates.filter((c) => {
       if (c.role !== role) return false;
-      if (role === "spl" || role === "aspl") return true;
+      if (COMMON_ROLES.includes(role)) return true;
       return c.house === house;
     });
   }
@@ -149,8 +153,18 @@ function VotePage() {
         <div className="space-y-16 pb-40">
           {ROLES_ORDER.map(({ role, theme, Icon }, idx) => {
             const list = candidatesFor(role);
-            const accent = role === "spl" ? "#fbbf24" : role === "aspl" ? "#a78bfa" : houseColor;
-            const glow = role === "spl" ? "rgba(251,191,36,0.5)" : role === "aspl" ? "rgba(167,139,250,0.5)" : houseGlow;
+            const accent =
+              role === "spl" ? "#fbbf24"
+              : role === "aspl" ? "#a78bfa"
+              : role === "sports-sec" ? "#34d399"
+              : role === "cultural-sec" ? "#f472b6"
+              : houseColor;
+            const glow =
+              role === "spl" ? "rgba(251,191,36,0.5)"
+              : role === "aspl" ? "rgba(167,139,250,0.5)"
+              : role === "sports-sec" ? "rgba(52,211,153,0.5)"
+              : role === "cultural-sec" ? "rgba(244,114,182,0.5)"
+              : houseGlow;
             const selectedId = selections[role];
             return (
               <section
@@ -364,8 +378,18 @@ function ReviewOverlay({
   const rows = ROLES_ORDER.map(({ role, Icon }) => {
     const id = selections[role];
     const cand = id ? candidates.find((c) => c.id === id) : undefined;
-    const accent = role === "spl" ? "#fbbf24" : role === "aspl" ? "#a78bfa" : color;
-    const accentGlow = role === "spl" ? "rgba(251,191,36,0.5)" : role === "aspl" ? "rgba(167,139,250,0.5)" : glow;
+    const accent =
+      role === "spl" ? "#fbbf24"
+      : role === "aspl" ? "#a78bfa"
+      : role === "sports-sec" ? "#34d399"
+      : role === "cultural-sec" ? "#f472b6"
+      : color;
+    const accentGlow =
+      role === "spl" ? "rgba(251,191,36,0.5)"
+      : role === "aspl" ? "rgba(167,139,250,0.5)"
+      : role === "sports-sec" ? "rgba(52,211,153,0.5)"
+      : role === "cultural-sec" ? "rgba(244,114,182,0.5)"
+      : glow;
     return { role, Icon, cand, accent, accentGlow };
   }).filter((r) => r.cand);
 

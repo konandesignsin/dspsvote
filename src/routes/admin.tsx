@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AuroraBg, Particles } from "@/components/AuroraBg";
 import {
   HOUSES,
@@ -10,7 +10,7 @@ import {
   type House,
   type Role,
 } from "@/lib/election";
-import { Pencil, Trash2, Plus, Download, RotateCcw, Home, X, Lock, Unlock, Trash } from "lucide-react";
+import { Pencil, Trash2, Plus, Download, RotateCcw, Home, X, Lock, Unlock, Trash, LogOut, ShieldCheck } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, PieChart, Pie, Cell, Legend } from "recharts";
 import { ImageUpload } from "@/components/ImageUpload";
@@ -23,6 +23,16 @@ export const Route = createFileRoute("/admin")({
 });
 
 function AdminPage() {
+  const [unlocked, setUnlocked] = useState(false);
+  const [checked, setChecked] = useState(false);
+
+  useEffect(() => {
+    try {
+      setUnlocked(sessionStorage.getItem("admin.unlocked") === "1");
+    } catch {}
+    setChecked(true);
+  }, []);
+
   const candidates = useStore(() => store.getCandidates());
   const votes = useStore(() => store.getVotes());
   const [activeTab, setActiveTab] = useState<"dashboard" | "candidates" | "houses" | "branding" | "results" | "device">("dashboard");
@@ -42,6 +52,9 @@ function AdminPage() {
     return { byHouse, byCandidate, total: votes.length };
   }, [votes]);
 
+  if (!checked) return null;
+  if (!unlocked) return <AdminGate onUnlock={() => setUnlocked(true)} />;
+
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
       <AuroraBg />
@@ -52,9 +65,20 @@ function AdminPage() {
             <p className="text-xs uppercase tracking-widest text-white/40">Election Control</p>
             <h1 className="text-3xl font-bold text-gradient-luxury">Admin Panel</h1>
           </div>
-          <Link to="/" className="glass rounded-full px-4 py-2 text-xs text-white/70 hover:text-white flex items-center gap-2 transition hover:scale-105">
-            <Home className="w-3.5 h-3.5" /> Home
-          </Link>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => {
+                try { sessionStorage.removeItem("admin.unlocked"); } catch {}
+                setUnlocked(false);
+              }}
+              className="glass rounded-full px-4 py-2 text-xs text-white/70 hover:text-white flex items-center gap-2 transition hover:scale-105"
+            >
+              <LogOut className="w-3.5 h-3.5" /> Lock
+            </button>
+            <Link to="/" className="glass rounded-full px-4 py-2 text-xs text-white/70 hover:text-white flex items-center gap-2 transition hover:scale-105">
+              <Home className="w-3.5 h-3.5" /> Home
+            </Link>
+          </div>
         </header>
 
         <nav className="glass rounded-full p-1.5 inline-flex flex-wrap gap-1 mb-8">
@@ -78,6 +102,68 @@ function AdminPage() {
         {activeTab === "results" && <ResultsTab candidates={candidates} totals={totals} />}
         {activeTab === "device" && <DeviceTab />}
       </div>
+    </div>
+  );
+}
+
+const ADMIN_PASSWORD = "dawn2026";
+
+function AdminGate({ onUnlock }: { onUnlock: () => void }) {
+  const [pw, setPw] = useState("");
+  const [err, setErr] = useState(false);
+  const logo = useStore(() => store.getSchoolLogo());
+
+  function submit(e: React.FormEvent) {
+    e.preventDefault();
+    if (pw === ADMIN_PASSWORD) {
+      try { sessionStorage.setItem("admin.unlocked", "1"); } catch {}
+      onUnlock();
+    } else {
+      setErr(true);
+    }
+  }
+
+  return (
+    <div className="relative min-h-screen w-full overflow-hidden flex items-center justify-center px-6">
+      <AuroraBg />
+      <Particles count={20} />
+      <form
+        onSubmit={submit}
+        className="glass-strong rounded-3xl p-8 md:p-10 max-w-md w-full relative z-10 animate-fade-up"
+        style={{ boxShadow: "0 30px 80px -20px rgba(167,139,250,0.4), inset 0 1px 0 rgba(255,255,255,0.15)" }}
+      >
+        <div
+          className="absolute -top-24 -right-24 w-64 h-64 rounded-full blur-3xl opacity-40 pointer-events-none"
+          style={{ background: "#a78bfa" }}
+        />
+        <div className="relative flex flex-col items-center text-center">
+          <SchoolLogoMark url={logo} size={80} />
+          <p className="text-[10px] uppercase tracking-[0.4em] text-white/40 mt-5">{SCHOOL_NAME}</p>
+          <h1 className="text-3xl font-bold text-gradient-luxury mt-1 mb-1">Admin Access</h1>
+          <p className="text-sm text-white/50 mb-6 flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4" /> Enter the admin password to continue
+          </p>
+          <input
+            type="password"
+            autoFocus
+            value={pw}
+            onChange={(e) => { setPw(e.target.value); setErr(false); }}
+            placeholder="Password"
+            className="glass-input rounded-xl px-4 py-3 w-full text-sm text-center tracking-widest"
+          />
+          {err && <p className="text-red-300 text-xs mt-3">Incorrect password. Try again.</p>}
+          <button
+            type="submit"
+            className="glass-strong mt-6 rounded-xl py-3 w-full text-white font-medium hover:scale-[1.02] transition"
+            style={{ boxShadow: "0 0 30px rgba(167,139,250,0.4)" }}
+          >
+            Unlock Admin Panel
+          </button>
+          <Link to="/" className="mt-4 text-xs text-white/40 hover:text-white/70 transition">
+            ← Back to Home
+          </Link>
+        </div>
+      </form>
     </div>
   );
 }
@@ -213,7 +299,7 @@ function CandidatesTab({ candidates }: { candidates: Candidate[] }) {
         </select>
         <select value={houseFilter} onChange={(e) => setHouseFilter(e.target.value as any)} className="glass-input rounded-full px-4 py-2.5 text-sm">
           <option value="all">All Houses</option>
-          <option value="none">Common (SPL/ASPL)</option>
+          <option value="none">Common (school-wide)</option>
           {HOUSES.map((h) => <option key={h.id} value={h.id}>{h.name}</option>)}
         </select>
         <button onClick={() => setAdding(true)} className="glass rounded-full px-5 py-2.5 text-sm text-white flex items-center gap-2 hover:scale-105 transition" style={{ boxShadow: "0 0 30px rgba(167,139,250,0.4)" }}>
@@ -382,7 +468,7 @@ function ResultsTab({ candidates, totals }: { candidates: Candidate[]; totals: {
     if (confirm("Are you sure? This will erase all vote data.")) store.resetVotes();
   }
 
-  const commonGrouped = (["spl", "aspl"] as Role[]).map((role) => ({
+  const commonGrouped = (["spl", "aspl", "sports-sec", "cultural-sec"] as Role[]).map((role) => ({
     role,
     items: candidates
       .filter((c) => c.role === role)
@@ -498,7 +584,13 @@ function ResultsTab({ candidates, totals }: { candidates: Candidate[]; totals: {
             {items.map((c, i) => {
               const max = Math.max(...items.map((x) => x.votes), 1);
               const pct = (c.votes / max) * 100;
-              const accent = c.house ? HOUSES.find((h) => h.id === c.house)!.color : role === "spl" ? "#fbbf24" : "#a78bfa";
+              const accent = c.house
+                ? HOUSES.find((h) => h.id === c.house)!.color
+                : role === "spl" ? "#fbbf24"
+                : role === "aspl" ? "#a78bfa"
+                : role === "sports-sec" ? "#34d399"
+                : role === "cultural-sec" ? "#f472b6"
+                : "#a78bfa";
               return (
                 <div key={c.id} className="relative glass rounded-xl px-4 py-3 overflow-hidden">
                   <div className="absolute inset-y-0 left-0 transition-all" style={{ width: `${pct}%`, background: `linear-gradient(to right, ${accent}30, transparent)` }} />
