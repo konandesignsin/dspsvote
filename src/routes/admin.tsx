@@ -299,7 +299,7 @@ function CandidatesTab({ candidates }: { candidates: Candidate[] }) {
         </select>
         <select value={houseFilter} onChange={(e) => setHouseFilter(e.target.value as any)} className="glass-input rounded-full px-4 py-2.5 text-sm">
           <option value="all">All Houses</option>
-          <option value="none">Common (SPL/ASPL)</option>
+          <option value="none">Common (school-wide)</option>
           {HOUSES.map((h) => <option key={h.id} value={h.id}>{h.name}</option>)}
         </select>
         <button onClick={() => setAdding(true)} className="glass rounded-full px-5 py-2.5 text-sm text-white flex items-center gap-2 hover:scale-105 transition" style={{ boxShadow: "0 0 30px rgba(167,139,250,0.4)" }}>
@@ -468,7 +468,7 @@ function ResultsTab({ candidates, totals }: { candidates: Candidate[]; totals: {
     if (confirm("Are you sure? This will erase all vote data.")) store.resetVotes();
   }
 
-  const commonGrouped = (["spl", "aspl"] as Role[]).map((role) => ({
+  const commonGrouped = (["spl", "aspl", "sports-sec", "cultural-sec"] as Role[]).map((role) => ({
     role,
     items: candidates
       .filter((c) => c.role === role)
@@ -584,7 +584,13 @@ function ResultsTab({ candidates, totals }: { candidates: Candidate[]; totals: {
             {items.map((c, i) => {
               const max = Math.max(...items.map((x) => x.votes), 1);
               const pct = (c.votes / max) * 100;
-              const accent = c.house ? HOUSES.find((h) => h.id === c.house)!.color : role === "spl" ? "#fbbf24" : "#a78bfa";
+              const accent = c.house
+                ? HOUSES.find((h) => h.id === c.house)!.color
+                : role === "spl" ? "#fbbf24"
+                : role === "aspl" ? "#a78bfa"
+                : role === "sports-sec" ? "#34d399"
+                : role === "cultural-sec" ? "#f472b6"
+                : "#a78bfa";
               return (
                 <div key={c.id} className="relative glass rounded-xl px-4 py-3 overflow-hidden">
                   <div className="absolute inset-y-0 left-0 transition-all" style={{ width: `${pct}%`, background: `linear-gradient(to right, ${accent}30, transparent)` }} />
