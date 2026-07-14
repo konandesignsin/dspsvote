@@ -106,6 +106,68 @@ function AdminPage() {
   );
 }
 
+const ADMIN_PASSWORD = "dawn2026";
+
+function AdminGate({ onUnlock }: { onUnlock: () => void }) {
+  const [pw, setPw] = useState("");
+  const [err, setErr] = useState(false);
+  const logo = useStore(() => store.getSchoolLogo());
+
+  function submit(e: React.FormEvent) {
+    e.preventDefault();
+    if (pw === ADMIN_PASSWORD) {
+      try { sessionStorage.setItem("admin.unlocked", "1"); } catch {}
+      onUnlock();
+    } else {
+      setErr(true);
+    }
+  }
+
+  return (
+    <div className="relative min-h-screen w-full overflow-hidden flex items-center justify-center px-6">
+      <AuroraBg />
+      <Particles count={20} />
+      <form
+        onSubmit={submit}
+        className="glass-strong rounded-3xl p-8 md:p-10 max-w-md w-full relative z-10 animate-fade-up"
+        style={{ boxShadow: "0 30px 80px -20px rgba(167,139,250,0.4), inset 0 1px 0 rgba(255,255,255,0.15)" }}
+      >
+        <div
+          className="absolute -top-24 -right-24 w-64 h-64 rounded-full blur-3xl opacity-40 pointer-events-none"
+          style={{ background: "#a78bfa" }}
+        />
+        <div className="relative flex flex-col items-center text-center">
+          <SchoolLogoMark url={logo} size={80} />
+          <p className="text-[10px] uppercase tracking-[0.4em] text-white/40 mt-5">{SCHOOL_NAME}</p>
+          <h1 className="text-3xl font-bold text-gradient-luxury mt-1 mb-1">Admin Access</h1>
+          <p className="text-sm text-white/50 mb-6 flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4" /> Enter the admin password to continue
+          </p>
+          <input
+            type="password"
+            autoFocus
+            value={pw}
+            onChange={(e) => { setPw(e.target.value); setErr(false); }}
+            placeholder="Password"
+            className="glass-input rounded-xl px-4 py-3 w-full text-sm text-center tracking-widest"
+          />
+          {err && <p className="text-red-300 text-xs mt-3">Incorrect password. Try again.</p>}
+          <button
+            type="submit"
+            className="glass-strong mt-6 rounded-xl py-3 w-full text-white font-medium hover:scale-[1.02] transition"
+            style={{ boxShadow: "0 0 30px rgba(167,139,250,0.4)" }}
+          >
+            Unlock Admin Panel
+          </button>
+          <Link to="/" className="mt-4 text-xs text-white/40 hover:text-white/70 transition">
+            ← Back to Home
+          </Link>
+        </div>
+      </form>
+    </div>
+  );
+}
+
 function Dashboard({ candidates, totals }: { candidates: Candidate[]; totals: { byHouse: Record<string, number>; total: number } }) {
   const data = HOUSES.map((h) => ({ name: h.name, votes: totals.byHouse[h.id] || 0, color: h.color }));
   return (
