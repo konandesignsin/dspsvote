@@ -61,7 +61,7 @@ function SiteGate({ children }: { children: ReactNode }) {
         className="relative z-10 w-full max-w-md rounded-2xl border border-white/10 bg-white/5 p-8 shadow-2xl backdrop-blur-xl"
       >
         <div className="mb-6 flex justify-center">
-          <SchoolBrand variant="md" />
+          <SchoolBrand size="md" showSubtitle={false} />
         </div>
         <h1 className="text-center text-xl font-bold text-white">Restricted Access</h1>
         <p className="mt-2 text-center text-sm text-white/60">
