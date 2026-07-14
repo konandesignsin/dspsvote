@@ -137,14 +137,20 @@ function VotePage() {
           <Link to="/" className="glass rounded-full px-4 py-2 text-xs text-white/70 hover:text-white flex items-center gap-2 transition hover:scale-105">
             <Home className="w-3.5 h-3.5" /> Home
           </Link>
-          <div className="flex items-center gap-4">
-            <SchoolLogoMark url={schoolLogo} size={56} />
-            <div className="text-center">
-              <p className="text-[10px] uppercase tracking-[0.35em] text-white/40">Voting as</p>
-              <h1 className="text-2xl md:text-3xl font-bold" style={{ color: houseColor }}>
-                {houseInfo.name} House
-              </h1>
-            </div>
+          <div className="flex flex-col items-center text-center">
+            <SchoolLogoMark url={schoolLogo} size={88} />
+            <h1
+              className="mt-2 text-lg sm:text-xl md:text-2xl font-extrabold tracking-[0.04em] text-white"
+              style={{
+                textShadow: "0 0 24px rgba(253,224,71,0.45), 0 0 50px rgba(255,255,255,0.25)",
+              }}
+            >
+              {SCHOOL_NAME}
+            </h1>
+            <p className="text-[10px] uppercase tracking-[0.35em] text-white/40 mt-1">Voting as</p>
+            <h2 className="text-2xl md:text-3xl font-bold" style={{ color: houseColor }}>
+              {houseInfo.name} House
+            </h2>
           </div>
           <div className="w-20" />
         </header>
