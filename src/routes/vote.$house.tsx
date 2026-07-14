@@ -19,7 +19,7 @@ import {
   type House,
   type Role,
 } from "@/lib/election";
-import { Check, Sparkles, Home, Crown, Gem, Shield, Star } from "lucide-react";
+import { Check, Sparkles, Home, Crown, Gem, Shield, Star, Trophy, Music } from "lucide-react";
 
 export const Route = createFileRoute("/vote/$house")({
   head: () => ({
@@ -31,6 +31,8 @@ export const Route = createFileRoute("/vote/$house")({
 const ROLES_ORDER: { role: Role; theme: string; Icon: any }[] = [
   { role: "spl", theme: "SPL", Icon: Crown },
   { role: "aspl", theme: "ASPL", Icon: Gem },
+  { role: "sports-sec", theme: "Sports Secretary", Icon: Trophy },
+  { role: "cultural-sec", theme: "Cultural Secretary", Icon: Music },
   { role: "captain", theme: "Captain", Icon: Shield },
   { role: "vice-captain", theme: "Vice Captain", Icon: Star },
 ];
