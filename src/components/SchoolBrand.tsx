@@ -21,7 +21,7 @@ export function SchoolBrand({
 }: Props) {
   const logo = useStore(() => store.getSchoolLogo());
   const dims =
-    size === "hero" ? 156 : size === "lg" ? 112 : size === "md" ? 72 : 44;
+    size === "hero" ? 180 : size === "lg" ? 128 : size === "md" ? 88 : 52;
 
   return (
     <div className={`flex flex-col items-center ${className}`}>
@@ -59,16 +59,18 @@ export function SchoolBrand({
             </div>
           )}
           <h1
-            className={`relative text-shine font-extrabold text-center leading-[1.05] tracking-[0.05em] ${
+            className={`relative text-shine font-black text-center leading-[1.05] tracking-[0.06em] ${
               size === "hero"
-                ? "text-4xl sm:text-5xl md:text-6xl lg:text-7xl"
+                ? "text-5xl sm:text-6xl md:text-7xl lg:text-8xl"
                 : size === "lg"
-                  ? "text-3xl md:text-4xl"
-                  : "text-xl"
+                  ? "text-4xl md:text-5xl"
+                  : size === "md"
+                    ? "text-2xl md:text-3xl"
+                    : "text-lg"
             }`}
             style={{
               textShadow:
-                "0 0 24px rgba(253,224,71,0.45), 0 0 60px rgba(255,255,255,0.25)",
+                "0 0 28px rgba(253,224,71,0.5), 0 0 70px rgba(255,255,255,0.3)",
             }}
           >
             {SCHOOL_NAME}
