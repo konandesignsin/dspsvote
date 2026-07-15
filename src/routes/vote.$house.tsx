@@ -229,93 +229,119 @@ function VotePage() {
                     No candidates yet for {ROLE_LABEL[role]}{role === "captain" || role === "vice-captain" ? ` in ${houseInfo.name}` : ""}.
                   </div>
                 ) : (
-                  <div className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  <div className="relative flex flex-wrap justify-center gap-10 md:gap-14 pt-24">
                     {list.map((c) => {
                       const selected = selectedId === c.id;
                       const dim = selectedId && !selected;
+                      const hex = "polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%)";
                       return (
                         <TiltGlass
                           key={c.id}
                           as="button"
                           onClick={() => select(role, c.id)}
-                          intensity={12}
-                          className={`group glass rounded-3xl p-5 pt-7 text-center flex flex-col items-center justify-start transition-all duration-500 hover:-translate-y-1 ${
-                            selected ? "scale-[1.05] animate-pulse-glow" : ""
-                          } ${dim ? "opacity-40 saturate-50" : ""}`}
+                          intensity={10}
+                          className={`group relative flex-1 min-w-[240px] max-w-[300px] pt-24 pb-6 px-5 text-center flex flex-col items-center justify-end transition-all duration-500 ${
+                            selected
+                              ? "scale-[1.06] animate-pulse-glow z-10"
+                              : dim
+                                ? "scale-[0.97] opacity-45 saturate-50"
+                                : "hover:-translate-y-1 hover:scale-[1.02]"
+                          }`}
                           style={{
                             ["--glow-color" as any]: glow,
-                            ...(selected
-                              ? {
-                                  border: `2px solid ${accent}`,
-                                  boxShadow: `0 0 60px ${glow}, inset 0 1px 0 rgba(255,255,255,0.25)`,
-                                  background: `linear-gradient(135deg, ${accent}25, rgba(255,255,255,0.04))`,
-                                }
-                              : {}),
+                            borderRadius: "32px",
+                            background: selected
+                              ? `linear-gradient(160deg, ${accent}30, rgba(20,18,45,0.55) 55%, rgba(10,8,28,0.4))`
+                              : "linear-gradient(160deg, rgba(20,18,45,0.55), rgba(10,8,28,0.35))",
+                            backdropFilter: "blur(28px) saturate(170%)",
+                            border: selected
+                              ? `1.5px solid ${accent}`
+                              : `1px solid ${accent}33`,
+                            boxShadow: selected
+                              ? `0 0 90px ${glow}, 0 30px 70px -15px ${glow}, inset 0 1px 0 rgba(255,255,255,0.22)`
+                              : `0 18px 55px -12px rgba(0,0,0,0.75), inset 0 1px 0 rgba(255,255,255,0.08)`,
                           }}
                         >
                           {selected && (
                             <div
-                              className="absolute -top-2 -right-2 w-9 h-9 rounded-full flex items-center justify-center z-10 animate-breathe"
-                              style={{ background: accent, boxShadow: `0 0 24px ${glow}` }}
+                              className="absolute -top-3 -right-3 w-10 h-10 rounded-full flex items-center justify-center z-30 animate-breathe"
+                              style={{ background: accent, boxShadow: `0 0 28px ${glow}` }}
                             >
                               <Check className="w-5 h-5 text-black" strokeWidth={3} />
                             </div>
                           )}
-                          {/* Circular profile — hero of the card */}
+
+                          {/* Hexagonal avatar — floating above card */}
                           <div
-                            className={`relative rounded-full overflow-hidden flex items-center justify-center font-bold mb-4 ring-2 transition-all duration-500 ${
-                              selected
-                                ? "w-52 h-52 sm:w-56 sm:h-56 text-7xl animate-pulse-glow"
-                                : "w-48 h-48 sm:w-52 sm:h-52 text-6xl group-hover:scale-[1.06]"
+                            className={`absolute left-1/2 -translate-x-1/2 -top-20 transition-all duration-500 ${
+                              selected ? "scale-105" : "group-hover:scale-[1.04]"
                             }`}
-                            style={{
-                              background: `linear-gradient(135deg, ${accent}40, ${accent}10)`,
-                              color: accent,
-                              boxShadow: selected
-                                ? `0 0 75px ${glow}, 0 18px 45px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.35)`
-                                : `0 0 42px ${glow}, 0 14px 34px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.2)`,
-                              ["--tw-ring-color" as any]: `${accent}99`,
-                            }}
+                            style={{ width: 200, height: 200 }}
                           >
-                            {c.photo ? (
-                              <img src={c.photo} alt={c.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                            ) : (
-                              c.name.slice(0, 1).toUpperCase()
-                            )}
-                            {/* soft inner glow ring */}
-                            <span className="pointer-events-none absolute inset-0 rounded-full" style={{ boxShadow: `inset 0 0 28px ${accent}66` }} />
+                            {/* Outer glow hex ring */}
+                            <div
+                              className="absolute inset-0"
+                              style={{
+                                clipPath: hex,
+                                background: `linear-gradient(135deg, ${accent}, ${accent}55)`,
+                                filter: `drop-shadow(0 0 30px ${glow}) drop-shadow(0 20px 40px rgba(0,0,0,0.6))`,
+                              }}
+                            />
+                            {/* Inner photo */}
+                            <div
+                              className="absolute flex items-center justify-center font-bold text-6xl overflow-hidden"
+                              style={{
+                                inset: 4,
+                                clipPath: hex,
+                                background: `linear-gradient(135deg, ${accent}30, ${accent}05)`,
+                                color: accent,
+                              }}
+                            >
+                              {c.photo ? (
+                                <img
+                                  src={c.photo}
+                                  alt={c.name}
+                                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                />
+                              ) : (
+                                c.name.slice(0, 1).toUpperCase()
+                              )}
+                            </div>
                           </div>
-                          {/* Circular symbol badge — official election emblem */}
+
+                          {/* Symbol badge */}
                           {c.symbol && (
                             <div
-                              className={`relative w-20 h-20 mb-4 rounded-full overflow-hidden flex items-center justify-center transition-all duration-500 group-hover:scale-110 ${
-                                selected ? "ring-2 animate-breathe" : ""
-                              }`}
+                              className="relative w-14 h-14 mb-3 rounded-full overflow-hidden flex items-center justify-center transition-all duration-500 group-hover:scale-110"
                               style={{
                                 background:
                                   "linear-gradient(135deg, rgba(255,255,255,0.18), rgba(255,255,255,0.04))",
                                 backdropFilter: "blur(14px) saturate(160%)",
                                 border: `1px solid ${accent}88`,
-                                boxShadow: selected
-                                  ? `0 0 32px ${glow}, 0 8px 20px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.35)`
-                                  : `0 0 22px ${glow}, 0 6px 16px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.3)`,
-                                ["--tw-ring-color" as any]: `${accent}`,
+                                boxShadow: `0 0 20px ${glow}, inset 0 1px 0 rgba(255,255,255,0.3)`,
                               }}
                             >
                               {c.symbol.startsWith("data:") || c.symbol.startsWith("http") ? (
                                 <img src={c.symbol} alt="" className="w-full h-full object-cover" />
                               ) : (
-                                <span className="text-3xl leading-none">{c.symbol}</span>
+                                <span className="text-2xl leading-none">{c.symbol}</span>
                               )}
-                              <span
-                                className="pointer-events-none absolute inset-0 rounded-full"
-                                style={{ boxShadow: `inset 0 0 18px ${accent}55` }}
-                              />
                             </div>
                           )}
-                          {/* Name */}
-                          <p className="text-white font-semibold text-lg truncate w-full px-2 text-legible">{c.name}</p>
-                          <p className="text-[11px] text-white/75 uppercase tracking-widest mt-1 truncate w-full">
+
+                          {/* Frosted divider */}
+                          <div
+                            className="w-2/3 h-px mb-3"
+                            style={{
+                              background: `linear-gradient(to right, transparent, ${accent}88, transparent)`,
+                            }}
+                          />
+
+                          {/* Nameplate footer */}
+                          <p className="text-white font-bold text-lg truncate w-full px-2 text-legible tracking-wide">
+                            {c.name}
+                          </p>
+                          <p className="text-[10px] text-white/70 uppercase tracking-[0.3em] mt-1 truncate w-full">
                             {c.house ? HOUSES.find((h) => h.id === c.house)!.name : "Common"}
                           </p>
                         </TiltGlass>
