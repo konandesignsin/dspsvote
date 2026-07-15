@@ -241,7 +241,7 @@ function VotePage() {
                           as="button"
                           onClick={() => select(role, c.id)}
                           intensity={10}
-                          className={`group relative flex-1 min-w-[260px] max-w-[320px] pt-28 pb-10 px-8 text-center flex flex-col items-center justify-end transition-all duration-500 ${
+                          className={`group relative flex-1 min-w-[260px] max-w-[320px] pt-40 pb-10 px-8 text-center flex flex-col items-center justify-end transition-all duration-500 ${
                             selected
                               ? "scale-[1.06] animate-pulse-glow z-10"
                               : dim
