@@ -309,8 +309,9 @@ function VotePage() {
                               )}
                             </div>
 
-                            {/* Small circular photo badge — sits at bottom-center of the hex */}
-                            {c.photo && (
+                            {/* Small circular badge — sits at bottom-center of the hex.
+                                Uses the dedicated badge image if provided, else falls back to the photo. */}
+                            {(c.badge || c.photo) && (
                               <div
                                 className="absolute left-1/2 -translate-x-1/2 rounded-full overflow-hidden z-20"
                                 style={{
@@ -322,7 +323,7 @@ function VotePage() {
                                   boxShadow: `0 0 18px ${glow}, 0 8px 18px rgba(0,0,0,0.55)`,
                                 }}
                               >
-                                <img src={c.photo} alt="" className="w-full h-full object-cover" />
+                                <img src={c.badge || c.photo} alt="" className="w-full h-full object-cover" />
                               </div>
                             )}
 
