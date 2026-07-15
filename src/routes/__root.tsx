@@ -12,7 +12,7 @@ import { useState } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { store } from "@/lib/election";
+import { store, seedIfEmpty } from "@/lib/election";
 import { supabase } from "@/integrations/supabase/client";
 import { SchoolBrand } from "@/components/SchoolBrand";
 
@@ -209,6 +209,7 @@ function RootComponent() {
   // Keep the school logo synced from the shared backend on every device.
   useEffect(() => {
     void store.refreshSchoolLogo();
+    void seedIfEmpty();
     const channel = supabase
       .channel("app_settings_changes")
       .on(
