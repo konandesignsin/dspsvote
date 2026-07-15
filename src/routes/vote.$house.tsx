@@ -326,11 +326,11 @@ function VotePage() {
                               </div>
                             )}
 
-                            {/* Floating symbol — bottom-right of the hex, transparent PNG */}
+                            {/* Floating symbol — top-left/northwest of the hex, transparent PNG */}
                             {c.symbol && (c.symbol.startsWith("data:") || c.symbol.startsWith("http")) && (
                               <div
                                 className="absolute z-30"
-                                style={{ right: -10, bottom: 0, width: 86, height: 86 }}
+                                style={{ left: -18, top: -16, width: 86, height: 86 }}
                               >
                                 <FloatingSymbol src={c.symbol} accent={accent} glow={glow} size={86} />
                               </div>
