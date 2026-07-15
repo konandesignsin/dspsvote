@@ -229,20 +229,21 @@ function VotePage() {
                     No candidates yet for {ROLE_LABEL[role]}{role === "captain" || role === "vice-captain" ? ` in ${houseInfo.name}` : ""}.
                   </div>
                 ) : (
-                  <div className="relative flex flex-wrap justify-center gap-10 md:gap-14 pt-24">
-                    {list.map((c) => {
+                  <div className="relative flex flex-wrap justify-center gap-10 md:gap-14 pt-28">
+                    {list.map((c, cIdx) => {
                       const selected = selectedId === c.id;
                       const dim = selectedId && !selected;
-                      const hex = "polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%)";
+                      // Soft squircle (superellipse-ish) via large uniform radius
+                      const squircleRadius = "32%";
                       return (
                         <TiltGlass
                           key={c.id}
                           as="button"
                           onClick={() => select(role, c.id)}
                           intensity={10}
-                          className={`group relative flex-1 min-w-[240px] max-w-[300px] pt-24 pb-6 px-5 text-center flex flex-col items-center justify-end transition-all duration-500 ${
+                          className={`group relative flex-1 min-w-[240px] max-w-[300px] pt-28 pb-6 px-5 text-center flex flex-col items-center justify-end transition-all duration-500 animate-card-in ${
                             selected
-                              ? "scale-[1.06] animate-pulse-glow z-10"
+                              ? "scale-[1.05] z-10"
                               : dim
                                 ? "scale-[0.97] opacity-45 saturate-50"
                                 : "hover:-translate-y-1 hover:scale-[1.02]"
@@ -250,6 +251,7 @@ function VotePage() {
                           style={{
                             ["--glow-color" as any]: glow,
                             borderRadius: "32px",
+                            animationDelay: `${cIdx * 100}ms`,
                             background: selected
                               ? `linear-gradient(160deg, ${accent}30, rgba(20,18,45,0.55) 55%, rgba(10,8,28,0.4))`
                               : "linear-gradient(160deg, rgba(20,18,45,0.55), rgba(10,8,28,0.35))",
@@ -258,33 +260,33 @@ function VotePage() {
                               ? `1.5px solid ${accent}`
                               : `1px solid ${accent}33`,
                             boxShadow: selected
-                              ? `0 0 90px ${glow}, 0 30px 70px -15px ${glow}, inset 0 1px 0 rgba(255,255,255,0.22)`
+                              ? `0 0 60px ${glow}, 0 24px 60px -18px ${glow}, inset 0 1px 0 rgba(255,255,255,0.22)`
                               : `0 18px 55px -12px rgba(0,0,0,0.75), inset 0 1px 0 rgba(255,255,255,0.08)`,
                           }}
                         >
                           {selected && (
                             <div
-                              className="absolute -top-3 -right-3 w-10 h-10 rounded-full flex items-center justify-center z-30 animate-breathe"
+                              className="absolute -top-3 -right-3 w-10 h-10 rounded-full flex items-center justify-center z-30 animate-check-pop"
                               style={{ background: accent, boxShadow: `0 0 28px ${glow}` }}
                             >
                               <Check className="w-5 h-5 text-black" strokeWidth={3} />
                             </div>
                           )}
 
-                          {/* Hexagonal avatar — floating above card */}
+                          {/* Squircle avatar — floating above card */}
                           <div
-                            className={`absolute left-1/2 -translate-x-1/2 -top-20 transition-all duration-500 ${
+                            className={`absolute left-1/2 -translate-x-1/2 -top-24 transition-all duration-500 ${
                               selected ? "scale-105" : "group-hover:scale-[1.04]"
                             }`}
-                            style={{ width: 200, height: 200 }}
+                            style={{ width: 244, height: 244 }}
                           >
-                            {/* Outer glow hex ring */}
+                            {/* Outer glow ring */}
                             <div
                               className="absolute inset-0"
                               style={{
-                                clipPath: hex,
+                                borderRadius: squircleRadius,
                                 background: `linear-gradient(135deg, ${accent}, ${accent}55)`,
-                                filter: `drop-shadow(0 0 30px ${glow}) drop-shadow(0 20px 40px rgba(0,0,0,0.6))`,
+                                boxShadow: `0 0 30px ${glow}, 0 20px 40px rgba(0,0,0,0.6)`,
                               }}
                             />
                             {/* Inner photo */}
@@ -292,7 +294,7 @@ function VotePage() {
                               className="absolute flex items-center justify-center font-bold text-6xl overflow-hidden"
                               style={{
                                 inset: 4,
-                                clipPath: hex,
+                                borderRadius: `calc(${squircleRadius} - 2px)`,
                                 background: `linear-gradient(135deg, ${accent}30, ${accent}05)`,
                                 color: accent,
                               }}
@@ -340,9 +342,6 @@ function VotePage() {
                           {/* Nameplate footer */}
                           <p className="text-white font-bold text-lg truncate w-full px-2 text-legible tracking-wide">
                             {c.name}
-                          </p>
-                          <p className="text-[10px] text-white/70 uppercase tracking-[0.3em] mt-1 truncate w-full">
-                            {c.house ? HOUSES.find((h) => h.id === c.house)!.name : "Common"}
                           </p>
                         </TiltGlass>
                       );
