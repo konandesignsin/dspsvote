@@ -32,6 +32,66 @@ export type Database = {
         }
         Relationships: []
       }
+      candidates: {
+        Row: {
+          badge: string | null
+          created_at: string
+          house: string | null
+          id: string
+          name: string
+          photo: string | null
+          role: string
+          symbol: string | null
+          updated_at: string
+        }
+        Insert: {
+          badge?: string | null
+          created_at?: string
+          house?: string | null
+          id?: string
+          name: string
+          photo?: string | null
+          role: string
+          symbol?: string | null
+          updated_at?: string
+        }
+        Update: {
+          badge?: string | null
+          created_at?: string
+          house?: string | null
+          id?: string
+          name?: string
+          photo?: string | null
+          role?: string
+          symbol?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      votes: {
+        Row: {
+          created_at: string
+          id: string
+          selections: Json
+          ts: number
+          voter_house: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          selections?: Json
+          ts: number
+          voter_house: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          selections?: Json
+          ts?: number
+          voter_house?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
