@@ -241,7 +241,7 @@ function VotePage() {
                           as="button"
                           onClick={() => select(role, c.id)}
                           intensity={10}
-                          className={`group relative flex-1 min-w-[260px] max-w-[320px] pt-28 pb-10 px-8 text-center flex flex-col items-center justify-end transition-all duration-500 ${
+                          className={`group relative flex-1 min-w-[260px] max-w-[320px] pt-40 pb-10 px-8 text-center flex flex-col items-center justify-end transition-all duration-500 ${
                             selected
                               ? "scale-[1.06] animate-pulse-glow z-10"
                               : dim
@@ -326,11 +326,11 @@ function VotePage() {
                               </div>
                             )}
 
-                            {/* Floating symbol — bottom-right of the hex, transparent PNG */}
+                            {/* Floating symbol — top-left/northwest of the hex, transparent PNG */}
                             {c.symbol && (c.symbol.startsWith("data:") || c.symbol.startsWith("http")) && (
                               <div
                                 className="absolute z-30"
-                                style={{ right: -10, bottom: 0, width: 86, height: 86 }}
+                                style={{ left: -18, top: -16, width: 86, height: 86 }}
                               >
                                 <FloatingSymbol src={c.symbol} accent={accent} glow={glow} size={86} />
                               </div>
