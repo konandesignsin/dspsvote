@@ -362,6 +362,7 @@ function CandidateForm({ initial, onClose }: { initial: Candidate | null; onClos
   const [house, setHouse] = useState<House | "">(initial?.house || "");
   const [photo, setPhoto] = useState(initial?.photo || "");
   const [symbol, setSymbol] = useState(initial?.symbol || "");
+  const [badge, setBadge] = useState(initial?.badge || "");
 
   const requiresHouse = role === "captain" || role === "vice-captain";
 
@@ -373,6 +374,7 @@ function CandidateForm({ initial, onClose }: { initial: Candidate | null; onClos
       house: requiresHouse ? (house as House) || null : null,
       photo: photo || undefined,
       symbol: symbol || undefined,
+      badge: badge || undefined,
     };
     if (requiresHouse && !data.house) return;
     if (initial) store.updateCandidate(initial.id, data);
@@ -418,6 +420,15 @@ function CandidateForm({ initial, onClose }: { initial: Candidate | null; onClos
               accept="image/png"
               maxSize={400}
               preserveTransparency
+            />
+          </Field>
+          <Field label="Circle Badge (shown below candidate photo)">
+            <ImageUpload
+              value={badge}
+              onChange={(v) => setBadge(v || "")}
+              label="Upload circle badge"
+              shape="circle"
+              maxSize={400}
             />
           </Field>
         </div>
