@@ -11,6 +11,7 @@ export interface Candidate {
   house: House | null; // null for SPL/ASPL (common)
   photo?: string;
   symbol?: string;
+  badge?: string;
 }
 
 export interface VoteRecord {
