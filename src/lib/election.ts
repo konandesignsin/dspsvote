@@ -45,6 +45,7 @@ const LOCK_KEY = "election.deviceLock"; // local-only house lock
 const HOUSE_SYMBOLS_KEY = "election.houseSymbols";
 const SCHOOL_LOGO_KEY = "election.schoolLogo";
 const SCHOOL_LOGO_SETTING_KEY = "school_logo";
+const MIGRATED_KEY = "election.migratedToCloud";
 
 export const SCHOOL_NAME = "DAWN SHIKSHALAYA PUBLIC SCHOOL";
 export const SCHOOL_SUBTITLE = "HOUSE ELECTION 2026";
@@ -64,27 +65,172 @@ function write<T>(key: string, val: T) {
   window.dispatchEvent(new CustomEvent("election:change", { detail: { key } }));
 }
 
+// ---------------------------------------------------------------------------
+// Cloud-synced cache for candidates + votes
+// ---------------------------------------------------------------------------
+
+let candidatesCache: Candidate[] = [];
+let votesCache: VoteRecord[] = [];
+let cacheHydrated = false;
+
+function emit() {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new CustomEvent("election:change", { detail: { key: "cloud" } }));
+}
+
+type CandidateRow = {
+  id: string;
+  name: string;
+  role: string;
+  house: string | null;
+  photo: string | null;
+  symbol: string | null;
+  badge: string | null;
+};
+type VoteRow = {
+  id: string;
+  voter_house: string;
+  selections: unknown;
+  ts: number | string;
+};
+
+function rowToCandidate(r: CandidateRow): Candidate {
+  return {
+    id: r.id,
+    name: r.name,
+    role: r.role as Role,
+    house: (r.house as House | null) ?? null,
+    photo: r.photo ?? undefined,
+    symbol: r.symbol ?? undefined,
+    badge: r.badge ?? undefined,
+  };
+}
+function rowToVote(r: VoteRow): VoteRecord {
+  return {
+    id: r.id,
+    voterHouse: r.voter_house as House,
+    selections: (r.selections as Partial<Record<Role, string>>) ?? {},
+    ts: typeof r.ts === "string" ? Number(r.ts) : r.ts,
+  };
+}
+function candidateToInsert(c: Candidate) {
+  return {
+    id: c.id,
+    name: c.name,
+    role: c.role,
+    house: c.house,
+    photo: c.photo ?? null,
+    symbol: c.symbol ?? null,
+    badge: c.badge ?? null,
+  };
+}
+
+async function fetchCandidates(): Promise<Candidate[]> {
+  const { data, error } = await (supabase.from("candidates" as any).select("*") as any);
+  if (error) { console.error("fetchCandidates", error); return candidatesCache; }
+  return (data as CandidateRow[]).map(rowToCandidate);
+}
+async function fetchVotes(): Promise<VoteRecord[]> {
+  const { data, error } = await (supabase.from("votes" as any).select("*") as any);
+  if (error) { console.error("fetchVotes", error); return votesCache; }
+  return (data as VoteRow[]).map(rowToVote);
+}
+
+let realtimeSetup = false;
+function setupRealtime() {
+  if (realtimeSetup || typeof window === "undefined") return;
+  realtimeSetup = true;
+  supabase
+    .channel("election_sync")
+    .on("postgres_changes", { event: "*", schema: "public", table: "candidates" }, async () => {
+      candidatesCache = await fetchCandidates();
+      emit();
+    })
+    .on("postgres_changes", { event: "*", schema: "public", table: "votes" }, async () => {
+      votesCache = await fetchVotes();
+      emit();
+    })
+    .subscribe();
+}
+
 export const store = {
-  getCandidates: (): Candidate[] => read<Candidate[]>(CANDIDATES_KEY, []),
-  setCandidates: (list: Candidate[]) => write(CANDIDATES_KEY, list),
+  getCandidates: (): Candidate[] => candidatesCache,
+  setCandidates: (_list: Candidate[]) => {
+    // no-op kept for backwards compatibility (mutations should use add/update/delete)
+  },
   addCandidate: (c: Omit<Candidate, "id">) => {
-    const list = store.getCandidates();
-    list.push({ ...c, id: crypto.randomUUID() });
-    store.setCandidates(list);
+    const newCandidate: Candidate = { ...c, id: crypto.randomUUID() };
+    candidatesCache = [...candidatesCache, newCandidate];
+    emit();
+    void (async () => {
+      const { error } = await (supabase.from("candidates" as any).insert(candidateToInsert(newCandidate)) as any);
+      if (error) {
+        console.error("addCandidate", error);
+        candidatesCache = await fetchCandidates();
+        emit();
+      }
+    })();
   },
   updateCandidate: (id: string, patch: Partial<Candidate>) => {
-    store.setCandidates(store.getCandidates().map((c) => (c.id === id ? { ...c, ...patch } : c)));
+    candidatesCache = candidatesCache.map((c) => (c.id === id ? { ...c, ...patch } : c));
+    emit();
+    const updated = candidatesCache.find((c) => c.id === id);
+    if (!updated) return;
+    void (async () => {
+      const { error } = await (supabase
+        .from("candidates" as any)
+        .update(candidateToInsert(updated))
+        .eq("id", id) as any);
+      if (error) {
+        console.error("updateCandidate", error);
+        candidatesCache = await fetchCandidates();
+        emit();
+      }
+    })();
   },
   deleteCandidate: (id: string) => {
-    store.setCandidates(store.getCandidates().filter((c) => c.id !== id));
+    candidatesCache = candidatesCache.filter((c) => c.id !== id);
+    emit();
+    void (async () => {
+      const { error } = await (supabase.from("candidates" as any).delete().eq("id", id) as any);
+      if (error) {
+        console.error("deleteCandidate", error);
+        candidatesCache = await fetchCandidates();
+        emit();
+      }
+    })();
   },
-  getVotes: (): VoteRecord[] => read<VoteRecord[]>(VOTES_KEY, []),
+  getVotes: (): VoteRecord[] => votesCache,
   addVote: (v: Omit<VoteRecord, "id" | "ts">) => {
-    const list = store.getVotes();
-    list.push({ ...v, id: crypto.randomUUID(), ts: Date.now() });
-    write(VOTES_KEY, list);
+    const record: VoteRecord = { ...v, id: crypto.randomUUID(), ts: Date.now() };
+    votesCache = [...votesCache, record];
+    emit();
+    void (async () => {
+      const { error } = await (supabase.from("votes" as any).insert({
+        id: record.id,
+        voter_house: record.voterHouse,
+        selections: record.selections,
+        ts: record.ts,
+      }) as any);
+      if (error) {
+        console.error("addVote", error);
+        votesCache = await fetchVotes();
+        emit();
+      }
+    })();
   },
-  resetVotes: () => write(VOTES_KEY, []),
+  resetVotes: () => {
+    votesCache = [];
+    emit();
+    void (async () => {
+      const { error } = await (supabase.from("votes" as any).delete().neq("id", "00000000-0000-0000-0000-000000000000") as any);
+      if (error) {
+        console.error("resetVotes", error);
+        votesCache = await fetchVotes();
+        emit();
+      }
+    })();
+  },
   getLock: (): House | null => read<House | null>(LOCK_KEY, null),
   setLock: (h: House | null) => write(LOCK_KEY, h),
   getHouseSymbols: (): Partial<Record<House, string>> =>
@@ -151,9 +297,64 @@ export function useStore<T>(selector: () => T): T {
   return val;
 }
 
-export function seedIfEmpty() {
-  if (store.getCandidates().length > 0) return;
-  const seed: Omit<Candidate, "id">[] = [
+let initPromise: Promise<void> | null = null;
+
+/**
+ * Hydrates candidates + votes from Supabase, migrates any legacy localStorage
+ * candidates on first run, and subscribes to realtime updates so every open
+ * tab / device stays in sync. Idempotent — safe to call from multiple routes.
+ */
+export function seedIfEmpty(): Promise<void> {
+  if (typeof window === "undefined") return Promise.resolve();
+  if (initPromise) return initPromise;
+  initPromise = (async () => {
+    // 1. Hydrate cache from cloud.
+    const [cloudCandidates, cloudVotes] = await Promise.all([fetchCandidates(), fetchVotes()]);
+    candidatesCache = cloudCandidates;
+    votesCache = cloudVotes;
+    cacheHydrated = true;
+    emit();
+
+    // 2. If cloud is empty, migrate local data or seed defaults (one-shot).
+    if (candidatesCache.length === 0) {
+      const alreadyMigrated = read<boolean>(MIGRATED_KEY, false);
+      const localCandidates = read<Candidate[]>(CANDIDATES_KEY, []);
+      if (!alreadyMigrated && localCandidates.length > 0) {
+        const rows = localCandidates.map(candidateToInsert);
+        const { error } = await (supabase.from("candidates" as any).insert(rows) as any);
+        if (!error) {
+          write(MIGRATED_KEY, true);
+          candidatesCache = await fetchCandidates();
+          emit();
+        } else {
+          console.error("Migration of local candidates failed", error);
+        }
+      } else if (!alreadyMigrated) {
+        const defaults: Candidate[] = defaultSeed().map((c) => ({ ...c, id: crypto.randomUUID() }));
+        const { error } = await (supabase.from("candidates" as any).insert(defaults.map(candidateToInsert)) as any);
+        if (!error) {
+          write(MIGRATED_KEY, true);
+          candidatesCache = await fetchCandidates();
+          emit();
+        } else {
+          console.error("Seeding default candidates failed", error);
+        }
+      }
+    }
+
+    // 3. Wire realtime subscription so cross-tab / cross-device updates flow in.
+    setupRealtime();
+  })();
+  return initPromise;
+}
+
+// Silence unused warning; kept for callers wanting a hydration signal.
+export function isElectionHydrated() {
+  return cacheHydrated;
+}
+
+function defaultSeed(): Omit<Candidate, "id">[] {
+  return [
     { name: "Aarav Mehta", role: "spl", house: null },
     { name: "Priya Sharma", role: "spl", house: null },
     { name: "Rohan Iyer", role: "aspl", house: null },
@@ -169,5 +370,4 @@ export function seedIfEmpty() {
       { name: `${h.name} VC B`, role: "vice-captain" as Role, house: h.id },
     ]),
   ];
-  store.setCandidates(seed.map((c) => ({ ...c, id: crypto.randomUUID() })));
 }
