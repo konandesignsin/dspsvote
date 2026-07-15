@@ -23,8 +23,8 @@ export function FloatingSymbol({ src, accent, glow, size = 56 }: Props) {
     const r = el.getBoundingClientRect();
     const px = (e.clientX - r.left) / r.width;
     const py = (e.clientY - r.top) / r.height;
-    const ry = (px - 0.5) * 20; // max ~10deg
-    const rx = -(py - 0.5) * 20;
+    const ry = (px - 0.5) * 30; // max ~15deg
+    const rx = -(py - 0.5) * 30;
     el.style.setProperty("--sy-rx", `${rx}deg`);
     el.style.setProperty("--sy-ry", `${ry}deg`);
   }
@@ -45,18 +45,19 @@ export function FloatingSymbol({ src, accent, glow, size = 56 }: Props) {
       style={{
         width: size,
         height: size,
-        perspective: "500px",
+        perspective: "600px",
       }}
     >
-      {/* Ambient pulsing halo */}
+      {/* Ambient pulsing halo — oversized so it blooms past the symbol */}
       <div
-        className="absolute inset-0 rounded-full animate-symbol-halo pointer-events-none"
+        className="absolute rounded-full animate-symbol-halo pointer-events-none"
         style={{
-          background: `radial-gradient(circle, ${accent}88 0%, ${accent}33 40%, transparent 70%)`,
-          filter: `blur(10px)`,
+          inset: "-35%",
+          background: `radial-gradient(circle, ${accent}cc 0%, ${accent}55 35%, ${accent}22 55%, transparent 75%)`,
+          filter: "blur(14px)",
         }}
       />
-      {/* Drifting + tilting symbol */}
+      {/* Drifting + swaying + tilting symbol */}
       <div
         className="relative w-full h-full animate-symbol-drift"
         style={{
@@ -66,15 +67,17 @@ export function FloatingSymbol({ src, accent, glow, size = 56 }: Props) {
           transition: "transform 200ms ease-out",
         }}
       >
-        <img
-          src={src}
-          alt=""
-          className="w-full h-full object-contain select-none"
-          draggable={false}
-          style={{
-            filter: `drop-shadow(0 6px 8px rgba(0,0,0,0.55)) drop-shadow(0 2px 3px rgba(0,0,0,0.4)) drop-shadow(0 0 12px ${glow})`,
-          }}
-        />
+        <div className="w-full h-full animate-symbol-sway">
+          <img
+            src={src}
+            alt=""
+            className="w-full h-full object-contain select-none"
+            draggable={false}
+            style={{
+              filter: `drop-shadow(0 10px 14px rgba(0,0,0,0.6)) drop-shadow(0 3px 5px rgba(0,0,0,0.45)) drop-shadow(0 0 18px ${glow})`,
+            }}
+          />
+        </div>
       </div>
     </div>
   );

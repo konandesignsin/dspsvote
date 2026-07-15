@@ -456,15 +456,20 @@ body {
 /* Floating symbol badge */
 .floating-symbol { position: absolute; }
 @keyframes symbol-drift {
-  0%, 100% { transform: translateY(0) rotate(-1deg); }
-  50%      { transform: translateY(-6px) rotate(1deg); }
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-12px); }
 }
-.animate-symbol-drift { animation: symbol-drift 3.6s ease-in-out infinite; }
+.animate-symbol-drift { animation: symbol-drift 4.8s ease-in-out infinite; }
+@keyframes symbol-sway {
+  0%, 100% { transform: rotate(-4deg); }
+  50%      { transform: rotate(4deg); }
+}
+.animate-symbol-sway { animation: symbol-sway 6s ease-in-out infinite; transform-origin: 50% 60%; }
 @keyframes symbol-halo {
-  0%, 100% { opacity: 0.45; transform: scale(1); }
-  50%      { opacity: 0.9;  transform: scale(1.18); }
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50%      { opacity: 1;   transform: scale(1.4); }
 }
-.animate-symbol-halo { animation: symbol-halo 3.2s ease-in-out infinite; }
+.animate-symbol-halo { animation: symbol-halo 4s ease-in-out infinite; }
 
 .particle {
   position: absolute; width: 4px; height: 4px;

@@ -241,7 +241,7 @@ function VotePage() {
                           as="button"
                           onClick={() => select(role, c.id)}
                           intensity={10}
-                          className={`group relative flex-1 min-w-[240px] max-w-[300px] pt-24 pb-6 px-5 text-center flex flex-col items-center justify-end transition-all duration-500 ${
+                          className={`group relative flex-1 min-w-[260px] max-w-[320px] pt-28 pb-10 px-8 text-center flex flex-col items-center justify-end transition-all duration-500 ${
                             selected
                               ? "scale-[1.06] animate-pulse-glow z-10"
                               : dim
@@ -309,13 +309,30 @@ function VotePage() {
                               )}
                             </div>
 
+                            {/* Small circular photo badge — sits at bottom-center of the hex */}
+                            {c.photo && (
+                              <div
+                                className="absolute left-1/2 -translate-x-1/2 rounded-full overflow-hidden z-20"
+                                style={{
+                                  bottom: -18,
+                                  width: 54,
+                                  height: 54,
+                                  border: `2px solid ${accent}`,
+                                  background: "rgba(10,8,28,0.6)",
+                                  boxShadow: `0 0 18px ${glow}, 0 8px 18px rgba(0,0,0,0.55)`,
+                                }}
+                              >
+                                <img src={c.photo} alt="" className="w-full h-full object-cover" />
+                              </div>
+                            )}
+
                             {/* Floating symbol — bottom-right of the hex, transparent PNG */}
                             {c.symbol && (c.symbol.startsWith("data:") || c.symbol.startsWith("http")) && (
                               <div
-                                className="absolute z-20"
-                                style={{ right: -4, bottom: 6, width: 62, height: 62 }}
+                                className="absolute z-30"
+                                style={{ right: -10, bottom: 0, width: 86, height: 86 }}
                               >
-                                <FloatingSymbol src={c.symbol} accent={accent} glow={glow} size={62} />
+                                <FloatingSymbol src={c.symbol} accent={accent} glow={glow} size={86} />
                               </div>
                             )}
                           </div>
