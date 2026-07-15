@@ -336,24 +336,6 @@ body {
 .animate-popup-in { animation: popup-in 0.9s cubic-bezier(.2,.9,.3,1.2) both; }
 .animate-glow-burst { animation: glow-burst 1.4s ease-out forwards; }
 
-@keyframes card-in {
-  0%   { opacity: 0; transform: translateY(20px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
-.animate-card-in {
-  animation: card-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-@keyframes check-pop {
-  0%   { transform: scale(0); opacity: 0; }
-  60%  { transform: scale(1.2); opacity: 1; }
-  80%  { transform: scale(0.92); }
-  100% { transform: scale(1); opacity: 1; }
-}
-.animate-check-pop {
-  animation: check-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-}
-
 .bokeh {
   position: absolute; border-radius: 50%;
   background: radial-gradient(circle, rgba(253,224,71,0.7), rgba(253,224,71,0.1) 60%, transparent);
