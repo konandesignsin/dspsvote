@@ -9,6 +9,7 @@ import { PremiumButton } from "@/components/PremiumButton";
 import { CountdownRing } from "@/components/CountdownRing";
 import { SchoolLogoMark } from "@/components/SchoolBrand";
 import { SCHOOL_NAME } from "@/lib/election";
+import { FloatingSymbol } from "@/components/FloatingSymbol";
 import {
   HOUSES,
   ROLE_LABEL,
@@ -307,27 +308,17 @@ function VotePage() {
                                 c.name.slice(0, 1).toUpperCase()
                               )}
                             </div>
-                          </div>
 
-                          {/* Symbol badge */}
-                          {c.symbol && (
-                            <div
-                              className="relative w-14 h-14 mb-3 rounded-full overflow-hidden flex items-center justify-center transition-all duration-500 group-hover:scale-110"
-                              style={{
-                                background:
-                                  "linear-gradient(135deg, rgba(255,255,255,0.18), rgba(255,255,255,0.04))",
-                                backdropFilter: "blur(14px) saturate(160%)",
-                                border: `1px solid ${accent}88`,
-                                boxShadow: `0 0 20px ${glow}, inset 0 1px 0 rgba(255,255,255,0.3)`,
-                              }}
-                            >
-                              {c.symbol.startsWith("data:") || c.symbol.startsWith("http") ? (
-                                <img src={c.symbol} alt="" className="w-full h-full object-cover" />
-                              ) : (
-                                <span className="text-2xl leading-none">{c.symbol}</span>
-                              )}
-                            </div>
-                          )}
+                            {/* Floating symbol — bottom-right of the hex, transparent PNG */}
+                            {c.symbol && (c.symbol.startsWith("data:") || c.symbol.startsWith("http")) && (
+                              <div
+                                className="absolute z-20"
+                                style={{ right: -4, bottom: 6, width: 62, height: 62 }}
+                              >
+                                <FloatingSymbol src={c.symbol} accent={accent} glow={glow} size={62} />
+                              </div>
+                            )}
+                          </div>
 
                           {/* Frosted divider */}
                           <div

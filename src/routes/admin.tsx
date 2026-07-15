@@ -409,13 +409,13 @@ function CandidateForm({ initial, onClose }: { initial: Candidate | null; onClos
               maxSize={512}
             />
           </Field>
-          <Field label="Upload Symbol Image (PNG with transparent background)">
+          <Field label="Symbol/Emblem (transparent PNG)">
             <ImageUpload
               value={symbol && (symbol.startsWith("data:") || symbol.startsWith("http")) ? symbol : ""}
               onChange={(v) => setSymbol(v || "")}
-              label="Upload symbol"
+              label="Upload transparent PNG"
               shape="square"
-              accept="image/png,image/svg+xml,image/webp"
+              accept="image/png"
               maxSize={400}
               preserveTransparency
             />
