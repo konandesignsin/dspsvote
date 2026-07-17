@@ -10,7 +10,7 @@ import {
   type House,
   type Role,
 } from "@/lib/election";
-import { Pencil, Trash2, Plus, Download, RotateCcw, Home, X, Lock, Unlock, Trash, LogOut, ShieldCheck } from "lucide-react";
+import { Pencil, Trash2, Plus, Download, RotateCcw, Home, X, Lock, Unlock, Trash, LogOut, ShieldCheck, KeyRound } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, PieChart, Pie, Cell, Legend } from "recharts";
 import { ImageUpload } from "@/components/ImageUpload";
@@ -35,7 +35,7 @@ function AdminPage() {
 
   const candidates = useStore(() => store.getCandidates());
   const votes = useStore(() => store.getVotes());
-  const [activeTab, setActiveTab] = useState<"dashboard" | "candidates" | "houses" | "branding" | "results" | "device">("dashboard");
+  const [activeTab, setActiveTab] = useState<"dashboard" | "candidates" | "houses" | "branding" | "results" | "device" | "security">("dashboard");
 
   const totals = useMemo(() => {
     const byHouse: Record<string, number> = {};
@@ -82,7 +82,7 @@ function AdminPage() {
         </header>
 
         <nav className="glass rounded-full p-1.5 inline-flex flex-wrap gap-1 mb-8">
-          {(["dashboard", "candidates", "houses", "branding", "results", "device"] as const).map((t) => (
+          {(["dashboard", "candidates", "houses", "branding", "results", "device", "security"] as const).map((t) => (
             <button
               key={t}
               onClick={() => setActiveTab(t)}
@@ -90,7 +90,7 @@ function AdminPage() {
                 activeTab === t ? "bg-white/15 text-white" : "text-white/50 hover:text-white"
               }`}
             >
-              {t === "houses" ? "House Management" : t === "device" ? "Device Settings" : t === "branding" ? "School Branding" : t[0].toUpperCase() + t.slice(1)}
+              {t === "houses" ? "House Management" : t === "device" ? "Device Settings" : t === "branding" ? "School Branding" : t === "security" ? "Passwords" : t[0].toUpperCase() + t.slice(1)}
             </button>
           ))}
         </nav>
@@ -101,26 +101,31 @@ function AdminPage() {
         {activeTab === "branding" && <BrandingTab />}
         {activeTab === "results" && <ResultsTab candidates={candidates} totals={totals} />}
         {activeTab === "device" && <DeviceTab />}
+        {activeTab === "security" && <SecurityTab />}
       </div>
     </div>
   );
 }
 
-const ADMIN_PASSWORD = "dawn2026";
-
 function AdminGate({ onUnlock }: { onUnlock: () => void }) {
   const [pw, setPw] = useState("");
   const [err, setErr] = useState(false);
+  const [checking, setChecking] = useState(false);
   const logo = useStore(() => store.getSchoolLogo());
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (pw === ADMIN_PASSWORD) {
-      try { sessionStorage.setItem("admin.unlocked", "1"); } catch {}
-      onUnlock();
-    } else {
-      setErr(true);
-    }
+    if (checking) return;
+    setChecking(true);
+    void store.getAdminPassword().then((expected) => {
+      if (pw === expected) {
+        try { sessionStorage.setItem("admin.unlocked", "1"); } catch {}
+        onUnlock();
+      } else {
+        setErr(true);
+      }
+      setChecking(false);
+    });
   }
 
   return (
@@ -779,5 +784,129 @@ function DeviceTab() {
         </div>
       </div>
     </div>
+  );
+}
+
+function SecurityTab() {
+  return (
+    <div className="animate-fade-up max-w-3xl grid gap-6">
+      <div className="glass rounded-3xl p-6">
+        <h3 className="text-white font-semibold text-lg mb-1 flex items-center gap-2">
+          <KeyRound className="w-5 h-5" /> Password Management
+        </h3>
+        <p className="text-white/50 text-sm">
+          Change the site-wide access password and the admin panel password.
+          Changes sync to every device instantly.
+        </p>
+      </div>
+      <PasswordChangeCard
+        title="Site Access Password"
+        subtitle="Required to enter the website (any page)."
+        accent="#60a5fa"
+        loadCurrent={() => store.getSitePassword()}
+        save={(next) => store.setSitePassword(next)}
+      />
+      <PasswordChangeCard
+        title="Admin Panel Password"
+        subtitle="Required to open the /admin control panel."
+        accent="#a78bfa"
+        loadCurrent={() => store.getAdminPassword()}
+        save={(next) => store.setAdminPassword(next)}
+      />
+    </div>
+  );
+}
+
+function PasswordChangeCard({
+  title,
+  subtitle,
+  accent,
+  loadCurrent,
+  save,
+}: {
+  title: string;
+  subtitle: string;
+  accent: string;
+  loadCurrent: () => Promise<string>;
+  save: (next: string) => Promise<void>;
+}) {
+  const [current, setCurrent] = useState("");
+  const [next, setNext] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [status, setStatus] = useState<{ type: "ok" | "err"; msg: string } | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setStatus(null);
+    if (next.length < 4) {
+      setStatus({ type: "err", msg: "New password must be at least 4 characters." });
+      return;
+    }
+    if (next !== confirm) {
+      setStatus({ type: "err", msg: "New passwords do not match." });
+      return;
+    }
+    setSaving(true);
+    try {
+      const expected = await loadCurrent();
+      if (current !== expected) {
+        setStatus({ type: "err", msg: "Current password is incorrect." });
+        setSaving(false);
+        return;
+      }
+      await save(next);
+      setStatus({ type: "ok", msg: "Password updated successfully." });
+      setCurrent(""); setNext(""); setConfirm("");
+    } catch (err) {
+      console.error(err);
+      setStatus({ type: "err", msg: "Failed to save — try again." });
+    }
+    setSaving(false);
+  }
+
+  return (
+    <form
+      onSubmit={submit}
+      className="glass-strong rounded-3xl p-8 relative overflow-hidden"
+      style={{
+        boxShadow: `0 30px 80px -20px ${accent}55, inset 0 1px 0 rgba(255,255,255,0.12)`,
+        border: `1px solid ${accent}33`,
+      }}
+    >
+      <div
+        className="absolute -top-24 -right-24 w-64 h-64 rounded-full blur-3xl opacity-40 pointer-events-none"
+        style={{ background: accent }}
+      />
+      <div className="relative">
+        <p className="text-[10px] uppercase tracking-[0.4em] text-white/40 mb-1">Security</p>
+        <h2 className="text-2xl font-bold text-white mb-1">{title}</h2>
+        <p className="text-sm text-white/50 mb-6">{subtitle}</p>
+        <div className="space-y-4">
+          <Field label="Current password">
+            <input type="password" value={current} onChange={(e) => setCurrent(e.target.value)} className="glass-input rounded-xl px-4 py-2.5 w-full text-sm" autoComplete="current-password" />
+          </Field>
+          <Field label="New password">
+            <input type="password" value={next} onChange={(e) => setNext(e.target.value)} className="glass-input rounded-xl px-4 py-2.5 w-full text-sm" autoComplete="new-password" />
+          </Field>
+          <Field label="Confirm new password">
+            <input type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} className="glass-input rounded-xl px-4 py-2.5 w-full text-sm" autoComplete="new-password" />
+          </Field>
+        </div>
+        {status && (
+          <p className={`mt-4 text-sm ${status.type === "ok" ? "text-emerald-300" : "text-red-300"}`}>
+            {status.msg}
+          </p>
+        )}
+        <button
+          type="submit"
+          disabled={saving}
+          className="glass-strong mt-6 rounded-xl py-3 px-6 text-white font-medium hover:scale-[1.02] transition disabled:opacity-50"
+          style={{ boxShadow: `0 0 30px ${accent}55` }}
+        >
+          {saving ? "Saving..." : "Update Password"}
+        </button>
+      </div>
+    </form>
   );
 }

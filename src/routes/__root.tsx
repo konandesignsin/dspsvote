@@ -16,7 +16,6 @@ import { store, seedIfEmpty } from "@/lib/election";
 import { supabase } from "@/integrations/supabase/client";
 import { SchoolBrand } from "@/components/SchoolBrand";
 
-const SITE_PASSWORD = "dawn2026";
 const SITE_UNLOCK_KEY = "site.unlocked";
 
 function SiteGate({ children }: { children: ReactNode }) {
@@ -24,6 +23,7 @@ function SiteGate({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
   const [pw, setPw] = useState("");
   const [error, setError] = useState(false);
+  const [checking, setChecking] = useState(false);
 
   useEffect(() => {
     try {
@@ -48,15 +48,18 @@ function SiteGate({ children }: { children: ReactNode }) {
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          if (pw === SITE_PASSWORD) {
-            try {
-              sessionStorage.setItem(SITE_UNLOCK_KEY, "1");
-            } catch {}
-            setUnlocked(true);
-            setError(false);
-          } else {
-            setError(true);
-          }
+          if (checking) return;
+          setChecking(true);
+          void store.getSitePassword().then((expected) => {
+            if (pw === expected) {
+              try { sessionStorage.setItem(SITE_UNLOCK_KEY, "1"); } catch {}
+              setUnlocked(true);
+              setError(false);
+            } else {
+              setError(true);
+            }
+            setChecking(false);
+          });
         }}
         className="relative z-10 w-full max-w-md rounded-2xl border border-white/10 bg-white/5 p-8 shadow-2xl backdrop-blur-xl"
       >
