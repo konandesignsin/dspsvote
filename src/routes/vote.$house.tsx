@@ -315,9 +315,9 @@ function VotePage() {
                               <div
                                 className="absolute left-1/2 -translate-x-1/2 rounded-full overflow-hidden z-20"
                                 style={{
-                                  bottom: -18,
-                                  width: 54,
-                                  height: 54,
+                                  bottom: -22,
+                                  width: 70,
+                                  height: 70,
                                   border: `2px solid ${accent}`,
                                   background: "rgba(10,8,28,0.6)",
                                   boxShadow: `0 0 18px ${glow}, 0 8px 18px rgba(0,0,0,0.55)`,
