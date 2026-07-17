@@ -46,6 +46,10 @@ const HOUSE_SYMBOLS_KEY = "election.houseSymbols";
 const SCHOOL_LOGO_KEY = "election.schoolLogo";
 const SCHOOL_LOGO_SETTING_KEY = "school_logo";
 const MIGRATED_KEY = "election.migratedToCloud";
+const SITE_PASSWORD_KEY = "site_password";
+const ADMIN_PASSWORD_KEY = "admin_password";
+const DEFAULT_SITE_PASSWORD = "dawn2026";
+const DEFAULT_ADMIN_PASSWORD = "dawn2026";
 
 export const SCHOOL_NAME = "DAWN SHIKSHALAYA PUBLIC SCHOOL";
 export const SCHOOL_SUBTITLE = "HOUSE ELECTION 2026";
@@ -279,7 +283,47 @@ export const store = {
       console.error("Failed to load school logo from cloud", e);
     }
   },
+  /**
+   * Password management — stored as plaintext in app_settings (matches the
+   * app's existing kiosk-style, no-auth security model). Async by design so
+   * every device reads the current value on demand.
+   */
+  getSitePassword: async (): Promise<string> => {
+    return fetchSetting(SITE_PASSWORD_KEY, DEFAULT_SITE_PASSWORD);
+  },
+  getAdminPassword: async (): Promise<string> => {
+    return fetchSetting(ADMIN_PASSWORD_KEY, DEFAULT_ADMIN_PASSWORD);
+  },
+  setSitePassword: async (next: string): Promise<void> => {
+    await upsertSetting(SITE_PASSWORD_KEY, next);
+  },
+  setAdminPassword: async (next: string): Promise<void> => {
+    await upsertSetting(ADMIN_PASSWORD_KEY, next);
+  },
 };
+
+async function fetchSetting(key: string, fallback: string): Promise<string> {
+  try {
+    const { data, error } = await supabase
+      .from("app_settings")
+      .select("value")
+      .eq("key", key)
+      .maybeSingle();
+    if (error) throw error;
+    const v = (data?.value as string | undefined) ?? "";
+    return v && v.length > 0 ? v : fallback;
+  } catch (e) {
+    console.error("fetchSetting failed", key, e);
+    return fallback;
+  }
+}
+
+async function upsertSetting(key: string, value: string): Promise<void> {
+  const { error } = await supabase
+    .from("app_settings")
+    .upsert({ key, value, updated_at: new Date().toISOString() });
+  if (error) throw error;
+}
 
 export function useStore<T>(selector: () => T): T {
   const [val, setVal] = useState<T>(selector);
