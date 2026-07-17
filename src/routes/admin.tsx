@@ -10,7 +10,7 @@ import {
   type House,
   type Role,
 } from "@/lib/election";
-import { Pencil, Trash2, Plus, Download, RotateCcw, Home, X, Lock, Unlock, Trash, LogOut, ShieldCheck } from "lucide-react";
+import { Pencil, Trash2, Plus, Download, RotateCcw, Home, X, Lock, Unlock, Trash, LogOut, ShieldCheck, KeyRound } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, PieChart, Pie, Cell, Legend } from "recharts";
 import { ImageUpload } from "@/components/ImageUpload";
@@ -35,7 +35,7 @@ function AdminPage() {
 
   const candidates = useStore(() => store.getCandidates());
   const votes = useStore(() => store.getVotes());
-  const [activeTab, setActiveTab] = useState<"dashboard" | "candidates" | "houses" | "branding" | "results" | "device">("dashboard");
+  const [activeTab, setActiveTab] = useState<"dashboard" | "candidates" | "houses" | "branding" | "results" | "device" | "security">("dashboard");
 
   const totals = useMemo(() => {
     const byHouse: Record<string, number> = {};
@@ -82,7 +82,7 @@ function AdminPage() {
         </header>
 
         <nav className="glass rounded-full p-1.5 inline-flex flex-wrap gap-1 mb-8">
-          {(["dashboard", "candidates", "houses", "branding", "results", "device"] as const).map((t) => (
+          {(["dashboard", "candidates", "houses", "branding", "results", "device", "security"] as const).map((t) => (
             <button
               key={t}
               onClick={() => setActiveTab(t)}
@@ -90,7 +90,7 @@ function AdminPage() {
                 activeTab === t ? "bg-white/15 text-white" : "text-white/50 hover:text-white"
               }`}
             >
-              {t === "houses" ? "House Management" : t === "device" ? "Device Settings" : t === "branding" ? "School Branding" : t[0].toUpperCase() + t.slice(1)}
+              {t === "houses" ? "House Management" : t === "device" ? "Device Settings" : t === "branding" ? "School Branding" : t === "security" ? "Passwords" : t[0].toUpperCase() + t.slice(1)}
             </button>
           ))}
         </nav>
@@ -101,26 +101,31 @@ function AdminPage() {
         {activeTab === "branding" && <BrandingTab />}
         {activeTab === "results" && <ResultsTab candidates={candidates} totals={totals} />}
         {activeTab === "device" && <DeviceTab />}
+        {activeTab === "security" && <SecurityTab />}
       </div>
     </div>
   );
 }
 
-const ADMIN_PASSWORD = "dawn2026";
-
 function AdminGate({ onUnlock }: { onUnlock: () => void }) {
   const [pw, setPw] = useState("");
   const [err, setErr] = useState(false);
+  const [checking, setChecking] = useState(false);
   const logo = useStore(() => store.getSchoolLogo());
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (pw === ADMIN_PASSWORD) {
-      try { sessionStorage.setItem("admin.unlocked", "1"); } catch {}
-      onUnlock();
-    } else {
-      setErr(true);
-    }
+    if (checking) return;
+    setChecking(true);
+    void store.getAdminPassword().then((expected) => {
+      if (pw === expected) {
+        try { sessionStorage.setItem("admin.unlocked", "1"); } catch {}
+        onUnlock();
+      } else {
+        setErr(true);
+      }
+      setChecking(false);
+    });
   }
 
   return (
