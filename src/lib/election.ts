@@ -386,6 +386,9 @@ export function seedIfEmpty(): Promise<void> {
     cacheHydrated = true;
     emit();
 
+    // Hydrate ASPL ordering from shared settings.
+    await store.refreshAsplOrder();
+
     // 2. If cloud is empty, migrate local data or seed defaults (one-shot).
     if (candidatesCache.length === 0) {
       const alreadyMigrated = read<boolean>(MIGRATED_KEY, false);
