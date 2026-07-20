@@ -76,22 +76,11 @@ function VotePage() {
   const COMMON_ROLES: Role[] = ["spl", "aspl", "sports-sec", "cultural-sec"];
 
   function candidatesFor(role: Role): Candidate[] {
-    const list = candidates.filter((c) => {
+    return candidates.filter((c) => {
       if (c.role !== role) return false;
       if (COMMON_ROLES.includes(role)) return true;
       return c.house === house;
     });
-    if (role === "aspl") {
-      const order = store.getAsplOrder();
-      if (order.length > 0) {
-        const idx = (id: string) => {
-          const i = order.indexOf(id);
-          return i === -1 ? Number.MAX_SAFE_INTEGER : i;
-        };
-        return [...list].sort((a, b) => idx(a.id) - idx(b.id));
-      }
-    }
-    return list;
   }
 
   function select(role: Role, id: string) {

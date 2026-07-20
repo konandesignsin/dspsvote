@@ -10,7 +10,7 @@ import {
   type House,
   type Role,
 } from "@/lib/election";
-import { Pencil, Trash2, Plus, Download, RotateCcw, Home, X, Lock, Unlock, Trash, LogOut, ShieldCheck, KeyRound, ArrowUp, ArrowDown } from "lucide-react";
+import { Pencil, Trash2, Plus, Download, RotateCcw, Home, X, Lock, Unlock, Trash, LogOut, ShieldCheck, KeyRound } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, PieChart, Pie, Cell, Legend } from "recharts";
 import { ImageUpload } from "@/components/ImageUpload";
@@ -280,38 +280,8 @@ function CandidatesTab({ candidates }: { candidates: Candidate[] }) {
   const [houseFilter, setHouseFilter] = useState<House | "all" | "none">("all");
   const [editing, setEditing] = useState<Candidate | null>(null);
   const [adding, setAdding] = useState(false);
-  const asplOrder = useStore(() => store.getAsplOrder());
 
-  // Effective ASPL order: saved order first (existing IDs only), then any new
-  // ASPL candidates appended in their natural creation order.
-  const asplIds = useMemo(() => {
-    const aspl = candidates.filter((c) => c.role === "aspl").map((c) => c.id);
-    const existingSet = new Set(aspl);
-    const ordered = asplOrder.filter((id) => existingSet.has(id));
-    const remaining = aspl.filter((id) => !ordered.includes(id));
-    return [...ordered, ...remaining];
-  }, [candidates, asplOrder]);
-
-  function moveAspl(id: string, dir: -1 | 1) {
-    const arr = [...asplIds];
-    const i = arr.indexOf(id);
-    const j = i + dir;
-    if (i < 0 || j < 0 || j >= arr.length) return;
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-    store.setAsplOrder(arr);
-  }
-
-  const sortedCandidates = useMemo(() => {
-    const idx = new Map(asplIds.map((id, i) => [id, i] as const));
-    return [...candidates].sort((a, b) => {
-      if (a.role === "aspl" && b.role === "aspl") {
-        return (idx.get(a.id) ?? 0) - (idx.get(b.id) ?? 0);
-      }
-      return 0;
-    });
-  }, [candidates, asplIds]);
-
-  const filtered = sortedCandidates.filter((c) => {
+  const filtered = candidates.filter((c) => {
     if (search && !c.name.toLowerCase().includes(search.toLowerCase())) return false;
     if (roleFilter !== "all" && c.role !== roleFilter) return false;
     if (houseFilter === "none" && c.house !== null) return false;
@@ -366,26 +336,6 @@ function CandidatesTab({ candidates }: { candidates: Candidate[] }) {
                 </div>
               )}
               <div className="flex gap-1">
-                {c.role === "aspl" && (
-                  <>
-                    <button
-                      onClick={() => moveAspl(c.id, -1)}
-                      disabled={asplIds.indexOf(c.id) === 0}
-                      title="Move up in ASPL order"
-                      className="glass w-9 h-9 rounded-full flex items-center justify-center text-white/70 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
-                    >
-                      <ArrowUp className="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                      onClick={() => moveAspl(c.id, 1)}
-                      disabled={asplIds.indexOf(c.id) === asplIds.length - 1}
-                      title="Move down in ASPL order"
-                      className="glass w-9 h-9 rounded-full flex items-center justify-center text-white/70 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
-                    >
-                      <ArrowDown className="w-3.5 h-3.5" />
-                    </button>
-                  </>
-                )}
                 <button onClick={() => setEditing(c)} className="glass w-9 h-9 rounded-full flex items-center justify-center text-white/70 hover:text-white">
                   <Pencil className="w-3.5 h-3.5" />
                 </button>

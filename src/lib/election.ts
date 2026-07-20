@@ -48,7 +48,6 @@ const SCHOOL_LOGO_SETTING_KEY = "school_logo";
 const MIGRATED_KEY = "election.migratedToCloud";
 const SITE_PASSWORD_KEY = "site_password";
 const ADMIN_PASSWORD_KEY = "admin_password";
-const ASPL_ORDER_SETTING_KEY = "aspl_order";
 const DEFAULT_SITE_PASSWORD = "dawn2026";
 const DEFAULT_ADMIN_PASSWORD = "dawn2026";
 
@@ -76,7 +75,6 @@ function write<T>(key: string, val: T) {
 
 let candidatesCache: Candidate[] = [];
 let votesCache: VoteRecord[] = [];
-let asplOrderCache: string[] = [];
 let cacheHydrated = false;
 
 function emit() {
@@ -156,12 +154,6 @@ function setupRealtime() {
       votesCache = await fetchVotes();
       emit();
     })
-    .on("postgres_changes", { event: "*", schema: "public", table: "app_settings" }, async (payload: any) => {
-      const key = payload?.new?.key ?? payload?.old?.key;
-      if (key === ASPL_ORDER_SETTING_KEY) {
-        await store.refreshAsplOrder();
-      }
-    })
     .subscribe();
 }
 
@@ -213,31 +205,6 @@ export const store = {
     })();
   },
   getVotes: (): VoteRecord[] => votesCache,
-  getAsplOrder: (): string[] => asplOrderCache,
-  setAsplOrder: (ids: string[]) => {
-    asplOrderCache = [...ids];
-    emit();
-    void (async () => {
-      try {
-        await upsertSetting(ASPL_ORDER_SETTING_KEY, JSON.stringify(ids));
-      } catch (e) {
-        console.error("setAsplOrder failed", e);
-      }
-    })();
-  },
-  refreshAsplOrder: async (): Promise<void> => {
-    try {
-      const raw = await fetchSetting(ASPL_ORDER_SETTING_KEY, "");
-      if (!raw) { asplOrderCache = []; emit(); return; }
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) {
-        asplOrderCache = parsed.filter((x) => typeof x === "string");
-        emit();
-      }
-    } catch (e) {
-      console.error("refreshAsplOrder failed", e);
-    }
-  },
   addVote: (v: Omit<VoteRecord, "id" | "ts">) => {
     const record: VoteRecord = { ...v, id: crypto.randomUUID(), ts: Date.now() };
     votesCache = [...votesCache, record];
@@ -391,9 +358,6 @@ export function seedIfEmpty(): Promise<void> {
     votesCache = cloudVotes;
     cacheHydrated = true;
     emit();
-
-    // Hydrate ASPL ordering from shared settings.
-    await store.refreshAsplOrder();
 
     // 2. If cloud is empty, migrate local data or seed defaults (one-shot).
     if (candidatesCache.length === 0) {
