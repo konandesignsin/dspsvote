@@ -156,6 +156,12 @@ function setupRealtime() {
       votesCache = await fetchVotes();
       emit();
     })
+    .on("postgres_changes", { event: "*", schema: "public", table: "app_settings" }, async (payload: any) => {
+      const key = payload?.new?.key ?? payload?.old?.key;
+      if (key === ASPL_ORDER_SETTING_KEY) {
+        await store.refreshAsplOrder();
+      }
+    })
     .subscribe();
 }
 
